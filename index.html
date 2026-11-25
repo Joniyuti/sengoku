@@ -1,0 +1,3479 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>戦国ランス VIP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold-bright: #facc15;
+      --gold-deep: #b45309;
+      --crimson-vip: #dc2626;
+      --royal-bg: #120b18;
+      --panel-bg: #1c1124;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #09050d;
+      background-image:
+        radial-gradient(circle at 50% 10%, rgba(220, 38, 38, 0.22), transparent 52%),
+        radial-gradient(circle at 20% 88%, rgba(250, 204, 21, 0.14), transparent 50%);
+      color: #f8fafc;
+      font-family: 'Noto Sans JP', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: max(6px, env(safe-area-inset-top));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(4px, env(safe-area-inset-left));
+      padding-right: max(4px, env(safe-area-inset-right));
+    }
+
+    .font-vip {
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    .font-cinzel {
+      font-family: 'Cinzel', 'Noto Serif JP', serif;
+    }
+
+    #game-frame {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      width: auto;
+      max-width: 100vw;
+      height: min(
+        95dvh,
+        calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 14px),
+        calc(100vw * 16 / 9)
+      );
+      max-height: 1040px;
+      background: linear-gradient(180deg, #1b0f24 0%, #0f0814 100%);
+      border: 2px solid rgba(250, 204, 21, 0.72);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 2px rgba(220, 38, 38, 0.35),
+        0 20px 55px rgba(0, 0, 0, 0.92);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 640px) {
+      #game-frame {
+        width: min(
+          100vw,
+          calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px) * 9 / 16)
+        );
+        height: min(
+          calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px),
+          calc(100vw * 16 / 9)
+        );
+        border-radius: 14px;
+      }
+    }
+
+    .vip-card {
+      background: linear-gradient(180deg, rgba(35, 20, 46, 0.96) 0%, rgba(18, 10, 24, 0.98) 100%);
+      border: 1.5px solid rgba(250, 204, 21, 0.38);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .vip-btn {
+      background: linear-gradient(180deg, #361d47 0%, #1d0e29 100%);
+      border: 1.5px solid rgba(250, 204, 21, 0.55);
+      color: #fef9c3;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 3px 0 #0d0612;
+      transition: transform 0.07s ease, filter 0.1s ease, border-color 0.1s ease;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .vip-btn:hover:not(:disabled) {
+      filter: brightness(1.14);
+      border-color: #fde047;
+    }
+
+    .vip-btn:active:not(:disabled), .vip-btn.is-pressed {
+      transform: translateY(2px) scale(0.97);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 #0d0612;
+    }
+
+    .vip-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .vip-btn-gold {
+      background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%);
+      border: 1.5px solid #fef08a;
+      color: #1c0f04;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 3px 0 #713f12;
+    }
+
+    .vip-btn-crimson {
+      background: linear-gradient(180deg, #ef4444 0%, #991b1b 100%);
+      border: 1.5px solid #fca5a5;
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 0 #450a0a;
+    }
+
+    .vip-btn-emerald {
+      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+      border: 1.5px solid #6ee7b7;
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 0 #022c22;
+    }
+
+    .vip-btn-violet {
+      background: linear-gradient(180deg, #8b5cf6 0%, #5b21b6 100%);
+      border: 1.5px solid #ddd6fe;
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 0 #2e1065;
+    }
+
+    .vip-btn-sky {
+      background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+      border: 1.5px solid #bae6fd;
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 0 #082f49;
+    }
+
+    .thin-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: rgba(12, 6, 18, 0.6);
+    }
+    .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(250, 204, 21, 0.45);
+      border-radius: 999px;
+    }
+
+    @keyframes titleGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.55)); }
+      50% { filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.85)); }
+    }
+    .title-glow {
+      animation: titleGlow 2.6s ease-in-out infinite;
+    }
+
+    @keyframes cutinSlide {
+      0% { transform: translateX(-110%) skewX(-10deg); opacity: 0; }
+      18% { transform: translateX(0%) skewX(-6deg); opacity: 1; }
+      82% { transform: translateX(0%) skewX(-6deg); opacity: 1; }
+      100% { transform: translateX(115%) skewX(-10deg); opacity: 0; }
+    }
+    .cutin-banner {
+      animation: cutinSlide 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-frame">
+    <!-- ==================== 1. DRAMATIC TITLE SCREEN ==================== -->
+    <section id="screen-title" class="absolute inset-0 z-40 flex flex-col justify-between p-3.5 bg-gradient-to-b from-[#250e1c] via-[#13091a] to-[#08040c]">
+      <div class="flex items-center justify-between text-[10px]">
+        <span class="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-200 font-bold">
+          ⚔️ 47都道府県ヒロイン群像戦国SLG
+        </span>
+        <button id="btn-title-bgm" class="vip-btn px-2.5 py-0.5 rounded-lg font-bold text-[10px]">
+          🎵 BGM: 戦国序曲
+        </button>
+      </div>
+
+      <div class="text-center my-1">
+        <div class="font-cinzel text-[10px] tracking-[0.25em] text-amber-300/90 font-bold">
+          SENGOKU RANCE VIP EDITION
+        </div>
+        <h1 class="font-vip title-glow text-[27px] leading-tight font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-amber-400 to-red-500 mt-0.5">
+          戦国ランス VIP
+        </h1>
+        <p class="text-[10px] text-rose-200/90 font-bold mt-0.5">
+          〜俺様と47都道府県の美少女ヒロイン天下統一〜
+        </p>
+      </div>
+
+      <div class="relative rounded-2xl border border-amber-400/50 bg-stone-950/90 overflow-hidden shadow-2xl">
+        <canvas id="title-showcase-canvas" class="w-full h-[215px] block"></canvas>
+        <div class="px-2.5 py-1.5 bg-gradient-to-r from-red-950/90 via-purple-950/90 to-red-950/90 border-t border-amber-400/30 flex items-center justify-between text-[10px]">
+          <span id="title-cast-caption" class="font-bold text-amber-200 truncate">主人公：ランス＆全国ヒロイン集結！</span>
+          <span class="text-rose-300 font-black shrink-0">全47国・102名収録</span>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 mt-1">
+        <button id="btn-new-game" class="vip-btn vip-btn-gold w-full py-2.5 rounded-xl font-vip font-black text-sm tracking-wider">
+          ⚔️ 初めから天下統一（OP付き）
+        </button>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button id="btn-title-continue" class="vip-btn py-2 rounded-xl font-bold text-xs">
+            ▶ 続きから再開
+          </button>
+          <button id="btn-title-saves" class="vip-btn py-2 rounded-xl font-bold text-xs">
+            💾 セーブ / データ削除
+          </button>
+        </div>
+        <div class="text-center text-[9px] text-amber-200/75 pt-0.5">
+          PC操作: [Enter]開始 / [矢印・WASD]国移動 / [1-6]コマンド / [Space]進行
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. OPENING / ADV / RETREAT / BAD END / ENDING ==================== -->
+    <section id="screen-story" class="hidden absolute inset-0 z-50 flex flex-col justify-between p-3.5 bg-gradient-to-b from-[#1e0c1a]/98 via-[#110817]/98 to-[#07030a]/99">
+      <div class="flex items-center justify-between border-b border-amber-400/30 pb-1.5">
+        <span id="story-chapter-tag" class="px-2.5 py-0.5 rounded-full bg-red-600/80 border border-amber-300 text-[10px] font-black text-white">
+          序章・JAPAN上陸
+        </span>
+        <button id="btn-story-skip" class="vip-btn px-2.5 py-0.5 rounded-lg text-[10px] font-bold">
+          スキップ ⏭
+        </button>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-center items-center my-1.5">
+        <canvas id="story-portrait-canvas" class="w-full h-full max-h-[235px] rounded-2xl border border-amber-400/45 bg-stone-950/90 shadow-xl"></canvas>
+      </div>
+
+      <div class="vip-card rounded-2xl p-3 space-y-2">
+        <div class="flex items-center justify-between">
+          <span id="story-speaker" class="font-vip font-black text-sm text-amber-300">ランス</span>
+          <span id="story-page-indicator" class="text-[10px] text-slate-400">1 / 5</span>
+        </div>
+        <p id="story-text" class="text-xs leading-relaxed text-slate-100 min-h-[76px] whitespace-pre-line"></p>
+        <div id="story-actions" class="flex flex-wrap justify-end gap-2 pt-1">
+          <button id="btn-story-next" class="vip-btn vip-btn-gold px-4 py-1.5 rounded-xl font-black text-xs">
+            次へ進む ▶ [Space/Enter]
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. MAIN STRATEGIC MAP HEADER HUD ==================== -->
+    <header id="map-hud" class="hidden shrink-0 z-20 vip-card px-2.5 py-1.5 border-b border-amber-400/45">
+      <div class="flex items-center justify-between gap-1 text-[10px]">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span id="hud-turn" class="px-2 py-0.5 rounded bg-amber-400 text-stone-950 font-black shrink-0">第1ターン</span>
+          <span id="hud-territory" class="font-bold text-amber-200 shrink-0">領土 1 / 47</span>
+          <span id="hud-gold" class="font-bold text-yellow-300 shrink-0">💰 1200両</span>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="btn-map-bgm" class="vip-btn px-1.5 py-0.5 rounded text-[10px]" title="BGM切替">🎵</button>
+          <button id="btn-map-save" class="vip-btn px-2 py-0.5 rounded text-[10px] font-bold">💾 保存</button>
+        </div>
+      </div>
+
+      <div class="mt-1 grid grid-cols-3 gap-1.5 items-center text-[10px]">
+        <div class="bg-stone-950/75 px-2 py-0.5 rounded border border-rose-400/30 flex justify-between">
+          <span class="text-rose-300 font-bold">♥ 満足度</span>
+          <span id="hud-satisfaction" class="font-black text-white">10</span>
+        </div>
+        <div class="bg-stone-950/75 px-2 py-0.5 rounded border border-cyan-400/30 flex justify-between">
+          <span class="text-cyan-300 font-bold">⚔️ 行動力</span>
+          <span id="hud-ap" class="font-black text-white">2 / 2</span>
+        </div>
+        <div class="bg-stone-950/75 px-2 py-0.5 rounded border border-amber-400/30 flex justify-between">
+          <span class="text-amber-300 font-bold">👑 仲間/捕虜</span>
+          <span id="hud-roster-count" class="font-black text-white">4名 / 捕虜0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== 4. MAIN MAP + SELECTED PREFECTURE PANEL ==================== -->
+    <main id="screen-map" class="hidden flex-1 min-h-0 flex flex-col justify-between p-2 gap-1.5 overflow-hidden">
+      <div class="relative flex-1 min-h-0 rounded-2xl border border-amber-400/45 bg-[#0c1424] overflow-hidden shadow-inner">
+        <canvas id="japan-map-canvas" class="w-full h-full block touch-none"></canvas>
+        <div id="map-toast" class="pointer-events-none hidden absolute top-2 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-stone-950/95 border border-amber-400 text-[10px] font-black text-amber-200 shadow-lg whitespace-nowrap max-w-[94%] truncate"></div>
+
+        <div class="pointer-events-none absolute bottom-1.5 left-1.5 px-2 py-1 rounded-lg bg-stone-950/85 border border-white/15 text-[9px] space-y-0.5">
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span><span>ランス軍（自領・駐留可）</span></div>
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span>隣接・侵攻可能国</span></div>
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span><span>未隣接の諸国</span></div>
+        </div>
+      </div>
+
+      <div class="vip-card rounded-xl p-2 shrink-0 space-y-1.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span id="sel-pref-owner-badge" class="px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-600 text-white">自領</span>
+              <h2 id="sel-pref-name" class="font-vip font-black text-sm text-amber-300 truncate">愛知県（中部）</h2>
+              <span id="sel-pref-power" class="text-[10px] text-slate-300 shrink-0">駐留戦力 1500</span>
+            </div>
+            <div id="sel-pref-heroines" class="text-[10px] text-rose-200 font-bold truncate mt-0.5">
+              防衛駐留(4/4)：ランス / 織田信長 / 香姫 / シィル
+            </div>
+          </div>
+          <button id="btn-inspect-pref" class="vip-btn px-2 py-1 rounded-lg text-[10px] font-bold shrink-0">
+            👤 詳細/駐留
+          </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-1 text-[10px]">
+          <button id="cmd-invade" class="vip-btn vip-btn-crimson py-1.5 px-1 rounded-lg font-black">
+            ⚔️ 侵攻戦 [1]
+          </button>
+          <button id="cmd-reinforce" class="vip-btn py-1.5 px-1 rounded-lg font-bold">
+            🛡️ 兵補充 [2]
+          </button>
+          <button id="cmd-roster" class="vip-btn py-1.5 px-1 rounded-lg font-bold">
+            📜 編成/配置 [3]
+          </button>
+          <button id="cmd-reward" class="vip-btn py-1.5 px-1 rounded-lg font-bold">
+            ♨️ ごほうび [4]
+          </button>
+          <button id="cmd-bonus" class="vip-btn py-1.5 px-1 rounded-lg font-bold">
+            👑 大満足 [5]
+          </button>
+          <button id="cmd-endturn" class="vip-btn vip-btn-gold py-1.5 px-1 rounded-lg font-black">
+            ⌛ ターン終了 [6]
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== 5. SPECIALIZED SKILL BATTLE + SINGLE RETREAT BUTTON ==================== -->
+    <section id="screen-battle" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-2.5 bg-gradient-to-b from-[#1f0d1c] via-[#120917] to-[#09040d]">
+      <!-- Top Header with Single Battle-Wide Retreat Button -->
+      <div class="vip-card rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-1 text-[10px]">
+        <div class="min-w-0 truncate">
+          <span id="battle-title" class="font-vip font-black text-xs text-amber-300">合戦：愛知県の戦い</span>
+          <span id="battle-round" class="ml-1 px-1.5 py-0.5 rounded bg-red-600/80 text-white font-bold">R1/8</span>
+        </div>
+        <button id="btl-retreat-btn" class="vip-btn vip-btn-crimson px-2 py-0.5 rounded-lg font-black text-[10px] shrink-0">
+          🏳️ 撤退
+        </button>
+      </div>
+
+      <!-- Battle Visual Canvas + Skill Cut-In -->
+      <div class="relative flex-1 min-h-0 my-1.5 rounded-2xl border border-amber-400/50 bg-stone-950 overflow-hidden shadow-2xl">
+        <canvas id="battle-canvas" class="w-full h-full block"></canvas>
+
+        <div id="battle-cutin" class="pointer-events-none hidden absolute top-3 inset-x-2 z-20 rounded-xl bg-gradient-to-r from-red-950/95 via-amber-900/95 to-red-950/95 border-2 border-amber-300 px-3 py-2 shadow-2xl">
+          <div class="flex items-center justify-between text-[9px] text-amber-200 font-black">
+            <span id="cutin-skill-tag">★ 必殺技カットイン ★</span>
+            <span id="cutin-role-tag">個性</span>
+          </div>
+          <div id="cutin-speaker" class="font-vip font-black text-sm text-yellow-200">ランス</div>
+          <div id="cutin-quote" class="text-[11px] font-bold text-white leading-snug mt-0.5">「鬼畜アタックでぶっ飛ばすぜ！！」</div>
+        </div>
+
+        <div id="battle-narration" class="absolute bottom-1.5 left-1.5 right-1.5 px-2.5 py-1.5 rounded-xl bg-stone-950/92 border border-amber-400/45 text-[11px] font-bold text-amber-100 leading-snug">
+          戦況：各キャラの固有技（通常1〜2種＋必殺1種）を見極めて戦え！
+        </div>
+      </div>
+
+      <!-- Character-Specific Skill Deck (1-2 Normal Skills + 1 Limited Ultimate + Target Selector) -->
+      <div class="vip-card rounded-xl p-2 space-y-1.5 shrink-0">
+        <div class="flex items-center justify-between gap-1 text-[10px]">
+          <span id="battle-active-unit" class="font-black text-amber-300 truncate">行動：ランス（溜め:0 / 必殺:残1）</span>
+          <span id="battle-ap-badge" class="text-cyan-300 font-bold shrink-0">行動: 2/2</span>
+        </div>
+
+        <div id="battle-target-bar" class="hidden flex items-center gap-1 overflow-x-auto pb-0.5 text-[10px]">
+          <span id="battle-target-label" class="text-amber-200 font-black shrink-0">対象:</span>
+          <div id="battle-target-buttons" class="flex gap-1"></div>
+        </div>
+
+        <!-- Dynamic 3-Slot Skill Deck: [Normal 1] [Normal 2 (or 溜め/待機)] [Ultimate (1/battle)] -->
+        <div id="battle-skill-grid" class="grid grid-cols-3 gap-1 text-[10px]">
+          <button id="btl-slot-0" class="vip-btn vip-btn-crimson py-2 px-1.5 rounded-lg font-black truncate">通常技1</button>
+          <button id="btl-slot-1" class="vip-btn vip-btn-violet py-2 px-1.5 rounded-lg font-bold truncate">通常技2</button>
+          <button id="btl-slot-2" class="vip-btn vip-btn-gold py-2 px-1.5 rounded-lg font-black truncate">必殺技</button>
+        </div>
+        <div id="battle-skill-desc" class="text-[9px] text-slate-300 truncate">
+          キャラをタップしてターゲット選択／技ボタンで行動
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. MODAL DIALOGS ==================== -->
+    <section id="screen-modal" class="hidden absolute inset-0 z-50 flex flex-col justify-between p-3 vip-card">
+      <div class="flex items-center justify-between pb-2 border-b border-amber-400/35">
+        <h2 id="modal-title" class="font-vip font-black text-sm text-amber-300">武将編成・駐留配置</h2>
+        <button id="btn-close-modal" class="vip-btn vip-btn-crimson px-2.5 py-1 rounded-lg text-[10px] font-bold">✕ 閉じる</button>
+      </div>
+
+      <div id="modal-body" class="flex-1 min-h-0 overflow-y-auto thin-scroll py-2 space-y-2 text-xs"></div>
+
+      <div id="modal-delete-bar" class="hidden my-1.5 p-2.5 rounded-xl bg-rose-950/95 border border-rose-400 text-[11px] space-y-1.5">
+        <div id="modal-delete-msg" class="font-bold text-rose-100">このセーブデータを削除しますか？</div>
+        <div class="flex gap-2">
+          <button id="btn-modal-confirm-del" class="vip-btn vip-btn-crimson px-3 py-1 rounded-lg font-black text-[10px]">🗑 削除する</button>
+          <button id="btn-modal-cancel-del" class="vip-btn px-3 py-1 rounded-lg font-bold text-[10px]">キャンセル</button>
+        </div>
+      </div>
+
+      <div id="modal-footer" class="pt-1.5 border-t border-white/10 text-[10px] text-slate-300">
+        PC操作: [Esc]で閉じる / 矢印キー・数字キー対応
+      </div>
+    </section>
+  </div>
+
+  <script>
+    'use strict';
+
+    // =========================================================================
+    // 1. SAFE DOM & HIGH-DPI CANVAS HELPER
+    // =========================================================================
+    function onId(id, eventName, handler) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(eventName, handler);
+      return el;
+    }
+
+    function prepareCrispCanvas(canvas, logicalW, logicalH) {
+      if (!canvas) return null;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+      const rectW = canvas.clientWidth || logicalW;
+      const rectH = canvas.clientHeight || logicalH;
+      const targetW = Math.max(1, Math.round(rectW * dpr));
+      const targetH = Math.max(1, Math.round(rectH * dpr));
+
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(targetW / logicalW, targetH / logicalH);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      return ctx;
+    }
+
+    // =========================================================================
+    // 2. MULTI-TRACK WEB AUDIO BGM & DISTINCT SKILL SFX ENGINE
+    // =========================================================================
+    const VipAudio = (() => {
+      let ctx = null;
+      let bgmTimer = null;
+      let trackIndex = 0;
+      let muted = false;
+
+      const TRACKS = [
+        { name: '戦国序曲', tempo: 230, notes: [293.66, 349.23, 440.0, 523.25, 440.0, 392.0, 349.23, 329.63] },
+        { name: '天下布武の進軍', tempo: 185, notes: [220.0, 261.63, 329.63, 440.0, 392.0, 329.63, 293.66, 329.63] },
+        { name: '激突・合戦絵巻', tempo: 150, notes: [196.0, 293.66, 349.23, 392.0, 466.16, 392.0, 349.23, 293.66] },
+        { name: '湯けむり恋模様', tempo: 280, notes: [392.0, 440.0, 523.25, 659.25, 587.33, 523.25, 440.0, 392.0] },
+        { name: '永遠の凱歌（ED）', tempo: 260, notes: [261.63, 329.63, 392.0, 523.25, 493.88, 392.0, 440.0, 523.25] },
+        { name: '防衛線・緊急迎撃', tempo: 140, notes: [220.0, 233.08, 293.66, 329.63, 349.23, 329.63, 293.66, 233.08] },
+        { name: '落日の鎮魂歌（BAD）', tempo: 340, notes: [220.0, 196.0, 174.61, 164.81, 146.83, 130.81, 110.0, 98.0] }
+      ];
+
+      function ensure() {
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) ctx = new AC();
+        }
+        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+        return ctx;
+      }
+
+      function tone(freq, type = 'triangle', dur = 0.14, peak = 0.06, endFreq = null, delay = 0) {
+        if (muted) return;
+        const c = ensure();
+        if (!c) return;
+        try {
+          const t0 = c.currentTime + delay;
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, t0);
+          if (endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(30, endFreq), t0 + dur);
+          gain.gain.setValueAtTime(0.0001, t0);
+          gain.gain.linearRampToValueAtTime(peak, t0 + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(t0);
+          osc.stop(t0 + dur + 0.02);
+        } catch (_) {}
+      }
+
+      function noise(dur = 0.1, peak = 0.08, freq = 1200) {
+        if (muted) return;
+        const c = ensure();
+        if (!c) return;
+        try {
+          const len = Math.max(1, Math.floor(c.sampleRate * dur));
+          const buf = c.createBuffer(1, len, c.sampleRate);
+          const ch = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len);
+          const src = c.createBufferSource();
+          src.buffer = buf;
+          const flt = c.createBiquadFilter();
+          flt.type = 'bandpass';
+          flt.frequency.setValueAtTime(freq, c.currentTime);
+          const gain = c.createGain();
+          gain.gain.setValueAtTime(peak, c.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+          src.connect(flt);
+          flt.connect(gain);
+          gain.connect(c.destination);
+          src.start();
+        } catch (_) {}
+      }
+
+      function playTrack(idx) {
+        trackIndex = ((idx % TRACKS.length) + TRACKS.length) % TRACKS.length;
+        if (bgmTimer) {
+          clearInterval(bgmTimer);
+          bgmTimer = null;
+        }
+        const tr = TRACKS[trackIndex];
+        let step = 0;
+        bgmTimer = setInterval(() => {
+          if (muted || !ctx || ctx.state !== 'running') return;
+          const base = tr.notes[step % tr.notes.length];
+          tone(base, 'triangle', 0.18, 0.024);
+          if (step % 2 === 0) tone(base * 0.5, 'sine', 0.22, 0.022);
+          if (step % 4 === 3) tone(base * 1.5, 'sine', 0.12, 0.015);
+          step++;
+        }, tr.tempo);
+        return tr.name;
+      }
+
+      function cycleTrack() {
+        ensure();
+        if (muted) muted = false;
+        return playTrack(trackIndex + 1);
+      }
+
+      return {
+        ensure,
+        playTrack,
+        cycleTrack,
+        sfx: {
+          ui: () => tone(660, 'triangle', 0.06, 0.06, 880),
+          slash: () => {
+            noise(0.11, 0.12, 2300);
+            tone(600, 'sawtooth', 0.12, 0.09, 175);
+          },
+          lanceSpecial: () => {
+            noise(0.2, 0.16, 1750);
+            [440, 660, 880, 1174.66].forEach((f, i) => tone(f, 'sawtooth', 0.16, 0.095, f * 0.65, i * 0.035));
+          },
+          magic: () => {
+            [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 'sine', 0.18, 0.08, f * 1.2, i * 0.04));
+          },
+          gunBow: () => {
+            noise(0.09, 0.15, 980);
+            tone(880, 'square', 0.08, 0.085, 220);
+          },
+          cavalryCharge: () => {
+            tone(220, 'sawtooth', 0.15, 0.09, 440);
+            noise(0.14, 0.12, 720);
+          },
+          ninjaShuriken: () => {
+            [980, 1280, 1560].forEach((f, i) => tone(f, 'triangle', 0.06, 0.07, f * 0.5, i * 0.03));
+          },
+          chargeUp: () => {
+            [261.63, 392.0, 523.25, 783.99].forEach((f, i) => tone(f, 'sine', 0.14, 0.07, f * 1.12, i * 0.05));
+          },
+          aoeBlast: () => {
+            noise(0.24, 0.18, 820);
+            [180, 270, 360].forEach((f, i) => tone(f, 'sawtooth', 0.2, 0.09, 65, i * 0.04));
+          },
+          heal: () => {
+            [587.33, 739.99, 880.0, 1174.66].forEach((f, i) => tone(f, 'triangle', 0.2, 0.075, null, i * 0.055));
+          },
+          barrier: () => {
+            [440, 554.37, 659.25].forEach((f, i) => tone(f, 'sine', 0.16, 0.07, f * 1.1, i * 0.04));
+          },
+          cover: () => {
+            tone(240, 'triangle', 0.14, 0.09, 150);
+            noise(0.08, 0.09, 500);
+          },
+          hit: () => {
+            noise(0.12, 0.14, 650);
+            tone(160, 'sawtooth', 0.14, 0.11, 55);
+          },
+          guard: () => tone(320, 'square', 0.11, 0.075, 520),
+          victory: () => {
+            [392.0, 493.88, 587.33, 783.99].forEach((f, i) => tone(f, 'triangle', 0.24, 0.1, null, i * 0.1));
+          },
+          defeat: () => {
+            [329.63, 293.66, 261.63, 196.0].forEach((f, i) => tone(f, 'sawtooth', 0.24, 0.08, null, i * 0.12));
+          },
+          alarm: () => {
+            [440, 330, 440, 330].forEach((f, i) => tone(f, 'square', 0.12, 0.08, null, i * 0.11));
+          }
+        }
+      };
+    })();
+
+    // =========================================================================
+    // 3. BIASED / SPECIALIZED SKILL SETS PER CHARACTER (1-2 NORMAL + 1 ULTIMATE)
+    // =========================================================================
+    // Effect types:
+    //  - single_atk: { power, fx, sfx }
+    //  - weak_aoe: { power, fx, sfx }  (balanced lower multiplier for normal AoE)
+    //  - strong_aoe: { power, fx, sfx } (for ultimates / high-impact finishers)
+    //  - heal_single: { ratio, flat, fx }
+    //  - heal_all: { ratio, flat, fx }
+    //  - charge: { stacks, fx }
+    //  - guard: { fx }
+    //  - cover_ally: { fx } (absorbs incoming hits for allies this turn)
+    //  - barrier_single: { amount, fx }
+    //  - barrier_all: { amount, fx }
+
+    const CHARACTERS = {
+      // ランス：単体攻撃特化＋溜め強化。回復や全体攻撃は一切できない脳筋アタッカー
+      rance: {
+        id: 'rance', name: 'ランス', title: '鬼畜戦士', role: '単体斬撃特化',
+        hair: '#facc15', hairStyle: 'spiky', eye: '#ef4444', outfit: '#15803d', accent: '#fde047', headgear: 'bandana',
+        hp: 430, maxHp: 430, atk: 80, def: 46, ap: 2,
+        normalSkills: [
+          { name: '鬼畜斬り', desc: '敵単体に鋭い斬撃(威力1.0)', kind: 'single_atk', power: 1.0, fx: 'slash_arc', sfx: 'slash' },
+          { name: '気合溜め', desc: '溜め+1（次攻撃の威力が大きく上昇）', kind: 'charge', stacks: 1, fx: 'charge_aura', sfx: 'chargeUp' }
+        ],
+        ultimate: {
+          name: '鬼畜アタック',
+          quote: '「ハァァァッ！！鬼畜アタックで木っ端微塵だぜ！！」',
+          desc: '敵単体に超重撃(威力1.85／合戦1回)',
+          kind: 'single_atk',
+          power: 1.85,
+          fx: 'rance_cross',
+          sfx: 'lanceSpecial'
+        }
+      },
+      // 香姫：黒髪姫カット。単体バリア付与と全体バリア付与＋軍略必殺（直接の剣撃は弱め）
+      kouhime: {
+        id: 'kouhime', name: '香姫', title: '織田家姫君', role: '結界＆軍師',
+        hair: '#18181b', hairStyle: 'hime', eye: '#ec4899', outfit: '#db2777', accent: '#f472b6', headgear: 'tiara',
+        hp: 300, maxHp: 300, atk: 46, def: 42, ap: 1,
+        normalSkills: [
+          { name: '姫の守護壁', desc: '味方1人にバリア(耐久110)を張る', kind: 'barrier_single', amount: 110, fx: 'hex_shield', sfx: 'barrier' },
+          { name: '扇子打ち', desc: '敵単体に控えめな一撃(威力0.75)', kind: 'single_atk', power: 0.75, fx: 'slash_arc', sfx: 'slash' }
+        ],
+        ultimate: {
+          name: '姫様の桜吹雪結界',
+          quote: '「織田家の姫の号令、お受けなさいませ！『桜吹雪結界』！！」',
+          desc: '味方全員にバリア(耐久95)＆敵全体へ桜嵐(威力0.95)',
+          kind: 'barrier_all_aoe',
+          amount: 95,
+          power: 0.95,
+          fx: 'magic_pillar',
+          sfx: 'magic'
+        }
+      },
+      // 織田信長：単体強撃＆弱めの全体攻撃（攻撃力は少し抑えめ）＋魔王必殺
+      nobunaga: {
+        id: 'nobunaga', name: '織田信長', title: '尾張の風雲児', role: '炎刃＆全体牽制',
+        hair: '#1e1b4b', hairStyle: 'ponytail', eye: '#f59e0b', outfit: '#7f1d1d', accent: '#facc15', headgear: 'crest',
+        hp: 390, maxHp: 390, atk: 68, def: 46, ap: 1,
+        normalSkills: [
+          { name: '三段構え撃', desc: '敵単体に烈火の斬撃(威力1.05)', kind: 'single_atk', power: 1.05, fx: 'slash_arc', sfx: 'slash' },
+          { name: '威嚇の炎波', desc: '敵全体に弱めの炎波(威力0.62)', kind: 'weak_aoe', power: 0.62, fx: 'aoe_storm', sfx: 'aoeBlast' }
+        ],
+        ultimate: {
+          name: '第六天魔王斬',
+          quote: '「是非に及ばず！魔王の炎刃『第六天魔王斬』！！」',
+          desc: '敵単体に魔王の一閃(威力1.8)',
+          kind: 'single_atk',
+          power: 1.8,
+          fx: 'dragon_slash',
+          sfx: 'lanceSpecial'
+        }
+      },
+      // シィル：もこもこピンク髪。攻撃力は低いが、単体回復と全体回復に特化したヒーラー
+      sill: {
+        id: 'sill', name: 'シィル', title: '健気な魔法使い', role: '癒やし特化',
+        hair: '#f9a8d4', hairStyle: 'fluffy', eye: '#38bdf8', outfit: '#f8fafc', accent: '#f472b6', headgear: 'ribbon',
+        hp: 310, maxHp: 310, atk: 38, def: 40, ap: 1,
+        normalSkills: [
+          { name: 'ヒール・プチ', desc: '味方1人のHPを小回復(110+魔力)', kind: 'heal_single', ratio: 0.25, flat: 95, fx: 'heal_ring', sfx: 'heal' },
+          { name: 'みんなで癒やし', desc: '味方全員のHPを回復(75+魔力)', kind: 'heal_all', ratio: 0.16, flat: 65, fx: 'heal_ring', sfx: 'heal' }
+        ],
+        ultimate: {
+          name: 'ブリザード・リザレクション',
+          quote: '「ランス様のために！みんなを全開にする『ブリザード・リザレクション』！！」',
+          desc: '味方全員のHPを大幅回復(55%+120)',
+          kind: 'heal_all',
+          ratio: 0.55,
+          flat: 120,
+          fx: 'magic_pillar',
+          sfx: 'heal'
+        }
+      },
+      kenshin: {
+        id: 'kenshin', name: '上杉謙信', title: '越後の軍神', role: '神速剣豪',
+        hair: '#312e81', hairStyle: 'long', eye: '#60a5fa', outfit: '#f8fafc', accent: '#2563eb', headgear: 'headband',
+        hp: 470, maxHp: 470, atk: 84, def: 56, ap: 2,
+        normalSkills: [
+          { name: '車懸り斬', desc: '敵単体に神速の剣撃(威力1.05)', kind: 'single_atk', power: 1.05, fx: 'slash_arc', sfx: 'slash' },
+          { name: '軍神の構え', desc: '防御(被ダメ半減)＆溜め+1', kind: 'guard_charge', stacks: 1, fx: 'hex_shield', sfx: 'guard' }
+        ],
+        ultimate: {
+          name: '毘沙門天・神速抜刀',
+          quote: '「毘沙門天の加護あり！一閃『神速抜刀』！！」',
+          desc: '敵単体に超神速抜刀(威力1.9)',
+          kind: 'single_atk',
+          power: 1.9,
+          fx: 'dragon_slash',
+          sfx: 'lanceSpecial'
+        }
+      },
+      senhime: {
+        id: 'senhime', name: '戦姫', title: '三河の姫武将', role: '身代わり守護',
+        hair: '#eab308', hairStyle: 'twintail', eye: '#10b981', outfit: '#047857', accent: '#fef08a', headgear: 'crest',
+        hp: 450, maxHp: 450, atk: 54, def: 68, ap: 1,
+        normalSkills: [
+          { name: '私が盾になる！', desc: 'このラウンド味方全体の被弾をかばう', kind: 'cover_ally', fx: 'hex_shield', sfx: 'cover' },
+          { name: '葵の鉄壁防御', desc: '自身の防御を固め(被ダメ半減)＆小回復', kind: 'guard_heal', ratio: 0.15, flat: 40, fx: 'heal_ring', sfx: 'guard' }
+        ],
+        ultimate: {
+          name: '葵紋・天地鳴動撃',
+          quote: '「三河の魂よ響け！『天地鳴動撃』！！」',
+          desc: '味方全体バリア(100)＆敵全体へ震撃(威力0.9)',
+          kind: 'barrier_all_aoe',
+          amount: 100,
+          power: 0.9,
+          fx: 'aoe_storm',
+          sfx: 'aoeBlast'
+        }
+      },
+      suzume: {
+        id: 'suzume', name: '鈴女', title: '伊賀のくノ一', role: '疾駆＆乱撃',
+        hair: '#7c3aed', hairStyle: 'ponytail', eye: '#f43f5e', outfit: '#4c1d95', accent: '#c4b5fd', headgear: 'headband',
+        hp: 315, maxHp: 315, atk: 64, def: 36, ap: 2,
+        normalSkills: [
+          { name: '二連クナイ', desc: '敵単体に素早い攻撃(威力0.9)', kind: 'single_atk', power: 0.9, fx: 'shuriken_storm', sfx: 'ninjaShuriken' },
+          { name: '煙幕・散華', desc: '敵全体に弱めの手裏剣(威力0.58)', kind: 'weak_aoe', power: 0.58, fx: 'shuriken_storm', sfx: 'ninjaShuriken' }
+        ],
+        ultimate: {
+          name: '忍法・百花繚乱手裏剣',
+          quote: '「にゃはっ！逃げられないよ〜！『百花繚乱手裏剣』！！」',
+          desc: '敵全体に忍法乱舞(威力1.25)',
+          kind: 'strong_aoe',
+          power: 1.25,
+          fx: 'shuriken_storm',
+          sfx: 'aoeBlast'
+        }
+      }
+    };
+
+    function buildSpecializedSkillsForRole(role, name) {
+      const defaults = {
+        '武士': {
+          normalSkills: [
+            { name: '居合い斬り', desc: '敵単体に剣撃(威力1.0)', kind: 'single_atk', power: 1.0, fx: 'slash_arc', sfx: 'slash' },
+            { name: '闘気集中', desc: '溜め+1（次攻撃強化）', kind: 'charge', stacks: 1, fx: 'charge_aura', sfx: 'chargeUp' }
+          ],
+          ultimate: { name: '烈火閃空斬', quote: `「${name}の魂の一刀！『烈火閃空斬』！！」`, desc: '敵単体に強斬撃(威力1.8)', kind: 'single_atk', power: 1.8, fx: 'dragon_slash', sfx: 'lanceSpecial' }
+        },
+        '足軽': {
+          normalSkills: [
+            { name: '槍突き', desc: '敵単体に槍撃(威力0.9)', kind: 'single_atk', power: 0.9, fx: 'slash_arc', sfx: 'slash' },
+            { name: '身代わり陣', desc: '味方の被弾をかばう', kind: 'cover_ally', fx: 'hex_shield', sfx: 'cover' }
+          ],
+          ultimate: { name: '剛槍破軍衝', quote: `「一歩も引かぬ！『剛槍破軍衝』！！」`, desc: '敵単体に貫通槍撃(威力1.75)', kind: 'single_atk', power: 1.75, fx: 'sniper_beam', sfx: 'cavalryCharge' }
+        },
+        '軍師': {
+          normalSkills: [
+            { name: '火計・小', desc: '敵単体に策火(威力0.85)', kind: 'single_atk', power: 0.85, fx: 'magic_pillar', sfx: 'magic' },
+            { name: '軍略バリア', desc: '味方1人にバリア(耐久95)', kind: 'barrier_single', amount: 95, fx: 'hex_shield', sfx: 'barrier' }
+          ],
+          ultimate: { name: '天啓・落雷計', quote: `「策はすべて見えたわ！『天啓・落雷計』！！」`, desc: '敵全体に落雷計(威力1.2)', kind: 'strong_aoe', power: 1.2, fx: 'magic_pillar', sfx: 'aoeBlast' }
+        },
+        '巫女': {
+          normalSkills: [
+            { name: '清めの祈り', desc: '味方1人のHPを回復(95+魔力)', kind: 'heal_single', ratio: 0.22, flat: 85, fx: 'heal_ring', sfx: 'heal' },
+            { name: '神楽の波動', desc: '味方全員を小回復(60+魔力)', kind: 'heal_all', ratio: 0.14, flat: 55, fx: 'heal_ring', sfx: 'heal' }
+          ],
+          ultimate: { name: '神楽・浄化光輪', quote: `「神聖なる光の矢よ！『神楽・浄化光輪』！！」`, desc: '味方全員を大幅回復(48%+100)', kind: 'heal_all', ratio: 0.48, flat: 100, fx: 'magic_pillar', sfx: 'heal' }
+        },
+        '弓兵': {
+          normalSkills: [
+            { name: '速射の矢', desc: '敵単体に狙撃(威力1.05)', kind: 'single_atk', power: 1.05, fx: 'sniper_beam', sfx: 'gunBow' },
+            { name: '矢雨・小', desc: '敵全体に弱めの矢雨(威力0.6)', kind: 'weak_aoe', power: 0.6, fx: 'aoe_storm', sfx: 'gunBow' }
+          ],
+          ultimate: { name: '天翔・星弓貫通射', quote: `「風の導きで射抜く！『星弓貫通射』！！」`, desc: '敵単体に超狙撃(威力1.85)', kind: 'single_atk', power: 1.85, fx: 'sniper_beam', sfx: 'gunBow' }
+        },
+        '鉄砲': {
+          normalSkills: [
+            { name: '火縄一発', desc: '敵単体に砲撃(威力1.1)', kind: 'single_atk', power: 1.1, fx: 'sniper_beam', sfx: 'gunBow' },
+            { name: '装填・溜め', desc: '溜め+1（次砲撃の威力大幅UP）', kind: 'charge', stacks: 1, fx: 'charge_aura', sfx: 'chargeUp' }
+          ],
+          ultimate: { name: '業火・国崩し弾', quote: `「狙い澄ました一撃！『国崩し弾』発射！！」`, desc: '敵単体に国崩し弾(威力1.95)', kind: 'single_atk', power: 1.95, fx: 'aoe_storm', sfx: 'aoeBlast' }
+        },
+        '騎兵': {
+          normalSkills: [
+            { name: '突撃槍', desc: '敵単体に突撃(威力1.05)', kind: 'single_atk', power: 1.05, fx: 'cavalry_wave', sfx: 'cavalryCharge' },
+            { name: '駆足・溜め', desc: '溜め+1（突撃勢いを増す）', kind: 'charge', stacks: 1, fx: 'charge_aura', sfx: 'chargeUp' }
+          ],
+          ultimate: { name: '疾風・神馬突貫', quote: `「大地を揺るがす突撃！『神馬突貫』！！」`, desc: '敵全体に神馬突貫(威力1.22)', kind: 'strong_aoe', power: 1.22, fx: 'cavalry_wave', sfx: 'cavalryCharge' }
+        },
+        '忍者': {
+          normalSkills: [
+            { name: '影縫い手裏剣', desc: '敵単体に奇襲(威力0.9)', kind: 'single_atk', power: 0.9, fx: 'shuriken_storm', sfx: 'ninjaShuriken' },
+            { name: 'まきびし散弾', desc: '敵全体に弱めの散弾(威力0.56)', kind: 'weak_aoe', power: 0.56, fx: 'shuriken_storm', sfx: 'ninjaShuriken' }
+          ],
+          ultimate: { name: '幻影・疾駆乱舞', quote: `「残像すら捉えきれまい！『疾駆乱舞』！！」`, desc: '敵全体に疾駆乱舞(威力1.25)', kind: 'strong_aoe', power: 1.25, fx: 'shuriken_storm', sfx: 'aoeBlast' }
+        }
+      };
+      return defaults[role] || defaults['武士'];
+    }
+
+    const PREFECTURES = [
+      { id: 0, name: '北海道', region: '北海道', x: 302, y: 58, power: 430, heroines: [
+        { name: '雪ミク', work: '雪ミク', role: '巫女', hair: '#38bdf8', hairStyle: 'twintail', eye: '#0284c7', outfit: '#e0f2fe', accent: '#38bdf8', headgear: 'ribbon', quote: '「白銀の北海道から、歌と氷の魔法で応援しますね♪」' },
+        { name: 'アシリパ', work: 'ゴールデンカムイ', role: '弓兵', hair: '#1e293b', hairStyle: 'braid', eye: '#3b82f6', outfit: '#1d4ed8', accent: '#facc15', headgear: 'headband', quote: '「新しい時代の戦いか……私の弓の腕前を見せてやる！」' }
+      ]},
+      { id: 1, name: '青森県', region: '東北', x: 280, y: 124, power: 330, heroines: [
+        { name: '島風', work: '艦これ', role: '忍者', hair: '#fde047', hairStyle: 'long', eye: '#2563eb', outfit: '#1e3a8a', accent: '#ef4444', headgear: 'ears', quote: '「疾きこと島風の如し！誰にも追いつけないんだから！」' },
+        { name: '木幡真琴', work: 'ふらいんぐうぃっち', role: '軍師', hair: '#0f172a', hairStyle: 'long', eye: '#10b981', outfit: '#312e81', accent: '#a78bfa', headgear: 'hat', quote: '「青森の自然の魔力、ちょっとだけお貸ししますね」' }
+      ]},
+      { id: 2, name: '岩手県', region: '東北', x: 288, y: 158, power: 340, heroines: [
+        { name: '花巻乙葉', work: '政宗くんのリベンジ', role: '軍師', hair: '#92400e', hairStyle: 'bob', eye: '#d97706', outfit: '#7c2d12', accent: '#fde68a', headgear: 'ribbon', quote: '「盛岡冷麺パワーで、戦況もバッチリ分析しちゃいますよ！」' },
+        { name: '久慈ありす', work: '鉄道むすめ', role: '騎兵', hair: '#78350f', hairStyle: 'short', eye: '#0284c7', outfit: '#1e40af', accent: '#f8fafc', headgear: 'hat', quote: '「三陸の風に乗って、定刻通りに突撃発車しま〜す！」' }
+      ]},
+      { id: 3, name: '宮城県', region: '東北', x: 278, y: 192, power: 390, heroines: [
+        { name: '鹿目まどか', work: 'まどか☆マギカ', role: '弓兵', hair: '#f472b6', hairStyle: 'twintail', eye: '#ec4899', outfit: '#fbcfe8', accent: '#be185d', headgear: 'ribbon', quote: '「みんなが笑顔でいられるように、私も弓を引きます！」' },
+        { name: '暁美ほむら', work: 'まどか☆マギカ', role: '鉄砲', hair: '#1e1b4b', hairStyle: 'long', eye: '#a855f7', outfit: '#312e81', accent: '#e879f9', headgear: 'headband', quote: '「……この戦いの結末は、私が必ず書き換えてみせる」' }
+      ]},
+      { id: 4, name: '秋田県', region: '東北', x: 256, y: 156, power: 325, heroines: [
+        { name: '鮎川まどか', work: 'オレンジ☆ロード', role: '武士', hair: '#0f172a', hairStyle: 'long', eye: '#14b8a6', outfit: '#be123c', accent: '#fde047', headgear: 'none', quote: '「ふふ、無茶ばかりする男って放っておけないのよね」' },
+        { name: '日向ひなた', work: 'ヤマノススメ', role: '足軽', hair: '#d97706', hairStyle: 'twintail', eye: '#f59e0b', outfit: '#059669', accent: '#fef08a', headgear: 'hat', quote: '「山頂まで登りきる根性なら誰にも負けないよっ！」' }
+      ]},
+      { id: 5, name: '山形県', region: '東北', x: 256, y: 190, power: 330, heroines: [
+        { name: '長瀞早瀬', work: '長瀞さん', role: '忍者', hair: '#1e1b4b', hairStyle: 'long', eye: '#b45309', outfit: '#1e293b', accent: '#f43f5e', headgear: 'clip', quote: '「センパイ、弱気すぎ〜！私が直々に鍛えてあげますよ♪」' },
+        { name: '朝霧あかね', work: 'さくらんぼ枠', role: '巫女', hair: '#e11d48', hairStyle: 'bob', eye: '#fb7185', outfit: '#fff1f2', accent: '#be123c', headgear: 'ribbon', quote: '「山形の甘いさくらんぼのように、癒やしの力を届けます！」' }
+      ]},
+      { id: 6, name: '福島県', region: '東北', x: 268, y: 224, power: 365, heroines: [
+        { name: '雪村千鶴', work: '薄桜鬼', role: '武士', hair: '#451a03', hairStyle: 'ponytail', eye: '#b45309', outfit: '#0284c7', accent: '#f8fafc', headgear: 'ribbon', quote: '「会津の地で培った誠の心、この小太刀に込めます！」' },
+        { name: '宮永咲', work: '咲-Saki-', role: '軍師', hair: '#92400e', hairStyle: 'bob', eye: '#d97706', outfit: '#1e3a8a', accent: '#facc15', headgear: 'clip', quote: '「嶺の上で花が咲くように……勝機が見えました！」' }
+      ]},
+      { id: 7, name: '茨城県', region: '関東', x: 274, y: 256, power: 380, heroines: [
+        { name: '西住みほ', work: 'ガルパン', role: '軍師', hair: '#92400e', hairStyle: 'bob', eye: '#b45309', outfit: '#1e293b', accent: '#facc15', headgear: 'hat', quote: '「大洗女子学園、パンツァー・フォー！連携で突破します！」' },
+        { name: '秋山優花里', work: 'ガルパン', role: '鉄砲', hair: '#78350f', hairStyle: 'fluffy', eye: '#92400e', outfit: '#334155', accent: '#fbbf24', headgear: 'none', quote: '「ヒャッホォォウ！砲撃戦なら私にお任せください殿！」' }
+      ]},
+      { id: 8, name: '栃木県', region: '関東', x: 254, y: 248, power: 345, heroines: [
+        { name: '篠原明里', work: '秒速5センチメートル', role: '巫女', hair: '#3f2e21', hairStyle: 'bob', eye: '#78350f', outfit: '#fef3c7', accent: '#f472b6', headgear: 'ribbon', quote: '「桜の花びらが舞う速度で、みんなの傷を癒やしますね」' },
+        { name: '宇都宮餃子娘', work: 'とちぎ戦姫', role: '足軽', hair: '#b45309', hairStyle: 'bun', eye: '#dc2626', outfit: '#991b1b', accent: '#fde047', headgear: 'headband', quote: '「アツアツの鉄壁防御！生半可な攻撃は跳ね返すよ！」' }
+      ]},
+      { id: 9, name: '群馬県', region: '関東', x: 232, y: 254, power: 355, heroines: [
+        { name: '小淵沢報瀬', work: 'よりもい', role: '騎兵', hair: '#0f172a', hairStyle: 'long', eye: '#7c3aed', outfit: '#991b1b', accent: '#fde047', headgear: 'none', quote: '「ざまあみろって言ってやる！どんな壁だって突破するんだから！」' },
+        { name: '玉木マリ', work: 'よりもい', role: '足軽', hair: '#92400e', hairStyle: 'twintail', eye: '#d97706', outfit: '#1d4ed8', accent: '#fbbf24', headgear: 'clip', quote: '「青春の勢いで全速前進！群馬から天下まで一直線だよ！」' }
+      ]},
+      { id: 10, name: '埼玉県', region: '関東', x: 246, y: 274, power: 395, heroines: [
+        { name: '柊かがみ', work: 'らき☆すた', role: '巫女', hair: '#8b5cf6', hairStyle: 'twintail', eye: '#7c3aed', outfit: '#f8fafc', accent: '#dc2626', headgear: 'ribbon', quote: '「もー、あんたって人は本当に手がかかるんだから！ほら援護するわよ！」' },
+        { name: '泉こなた', work: 'らき☆すた', role: '忍者', hair: '#2563eb', hairStyle: 'long', eye: '#10b981', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'none', quote: '「これぞ伝説の攻略ルート！ステータス振りは任せてよ〜♪」' }
+      ]},
+      { id: 11, name: '千葉県', region: '関東', x: 274, y: 288, power: 405, heroines: [
+        { name: '雪ノ下雪乃', work: '俺ガイル', role: '武士', hair: '#0f172a', hairStyle: 'long', eye: '#38bdf8', outfit: '#1e293b', accent: '#f43f5e', headgear: 'ribbon', quote: '「非論理的な戦術ね。私が正しい勝利の剣筋を示してあげるわ」' },
+        { name: '由比ヶ浜結衣', work: '俺ガイル', role: '軍師', hair: '#fb7185', hairStyle: 'bun', eye: '#f59e0b', outfit: '#334155', accent: '#f472b6', headgear: 'bun', quote: '「やっはろー！みんなが仲良く勝てるように全力で応援するよっ！」' }
+      ]},
+      { id: 12, name: '東京都', region: '関東', x: 254, y: 292, power: 470, heroines: [
+        { name: '高坂穂乃果', work: 'ラブライブ！', role: '騎兵', hair: '#f97316', hairStyle: 'sidetail', eye: '#3b82f6', outfit: '#1e3a8a', accent: '#facc15', headgear: 'ribbon', quote: '「ファイトだよっ！東京の真ん中から、みんなの心をひとつにするよ！」' },
+        { name: '園田海未', work: 'ラブライブ！', role: '弓兵', hair: '#1e3a8a', hairStyle: 'long', eye: '#f59e0b', outfit: '#1e40af', accent: '#f8fafc', headgear: 'clip', quote: '「破廉恥な振る舞いは許しません！……ですが、弓の腕は確かでしてよ」' }
+      ]},
+      { id: 13, name: '神奈川県', region: '関東', x: 244, y: 308, power: 420, heroines: [
+        { name: '桜島麻衣', work: '青ブタ', role: '軍師', hair: '#1e1b4b', hairStyle: 'long', eye: '#3b82f6', outfit: '#0f172a', accent: '#f43f5e', headgear: 'clip', quote: '「私の姿が見えているなら、最後までしっかりエスコートしなさいよね」' },
+        { name: '牧之原翔子', work: '青ブタ', role: '巫女', hair: '#312e81', hairStyle: 'long', eye: '#6366f1', outfit: '#f8fafc', accent: '#93c5fd', headgear: 'ribbon', quote: '「『ありがとう』と『大好き』を込めて、優しい光をお届けします」' }
+      ]},
+      { id: 14, name: '新潟県', region: '中部', x: 226, y: 212, power: 440, heroines: [
+        { name: '直江愛', work: '戦国ランス', role: '軍師', hair: '#60a5fa', hairStyle: 'bob', eye: '#2563eb', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'ribbon', quote: '「謙信様の右腕として、越後の誇りある軍略をお見せしましょう！」' },
+        { name: '土岐綾乃', work: 'Do It Yourself!!', role: '足軽', hair: '#475569', hairStyle: 'bob', eye: '#0284c7', outfit: '#facc15', accent: '#1e293b', headgear: 'none', quote: '「手作りバリケード完成！これならどんな攻撃も防げるはず……！」' }
+      ]},
+      { id: 15, name: '富山県', region: '中部', x: 196, y: 244, power: 345, heroines: [
+        { name: '花', work: 'おおかみこども', role: '巫女', hair: '#451a03', hairStyle: 'ponytail', eye: '#78350f', outfit: '#fef3c7', accent: '#10b981', headgear: 'none', quote: '「笑顔でいればきっと道は開けます。立山の風と共に参りましょう」' },
+        { name: '水無瀬伊織', work: 'クロムクロ', role: '武士', hair: '#1e293b', hairStyle: 'long', eye: '#ef4444', outfit: '#991b1b', accent: '#facc15', headgear: 'crest', quote: '「黒部の山々を守るため、この剣を抜く覚悟はできています！」' }
+      ]},
+      { id: 16, name: '石川県', region: '中部', x: 180, y: 254, power: 365, heroines: [
+        { name: '松前緒花', work: '花咲くいろは', role: '足軽', hair: '#d97706', hairStyle: 'fluffy', eye: '#10b981', outfit: '#be185d', accent: '#fde047', headgear: 'clip', quote: '「ぼんぼりますっ！湯涌の仲居魂で、戦場だってピカピカにしてみせる！」' },
+        { name: '鶴来民子', work: '花咲くいろは', role: '武士', hair: '#0f172a', hairStyle: 'ponytail', eye: '#92400e', outfit: '#065f46', accent: '#f8fafc', headgear: 'none', quote: '「ホビロン！……邪魔するなら、まとめて叩き斬るだけだから」' }
+      ]},
+      { id: 17, name: '福井県', region: '中部', x: 168, y: 280, power: 340, heroines: [
+        { name: '白銀圭', work: 'かぐや様', role: '軍師', hair: '#e2e8f0', hairStyle: 'long', eye: '#38bdf8', outfit: '#1e293b', accent: '#f43f5e', headgear: 'ribbon', quote: '「冷静に戦況を見極めれば勝機はある。兄貴よりスマートに決めてやるわ」' },
+        { name: '朝倉義景姫', work: '一乗谷戦姫', role: '弓兵', hair: '#7c3aed', hairStyle: 'hime', eye: '#a855f7', outfit: '#4c1d95', accent: '#fde047', headgear: 'tiara', quote: '「一乗谷の雅と弓術、決して侮ってはなりませぬぞ」' }
+      ]},
+      { id: 18, name: '山梨県', region: '中部', x: 224, y: 288, power: 410, heroines: [
+        { name: '志摩リン', work: 'ゆるキャン△', role: '弓兵', hair: '#38bdf8', hairStyle: 'bun', eye: '#7c3aed', outfit: '#1e3a8a', accent: '#facc15', headgear: 'bun', quote: '「ソロでも十分戦えるけど……まあ、たまには共闘してやってもいい」' },
+        { name: '各務原なでしこ', work: 'ゆるキャン△', role: '騎兵', hair: '#f472b6', hairStyle: 'long', eye: '#38bdf8', outfit: '#fbbf24', accent: '#ec4899', headgear: 'hat', quote: '「リンちゃーん！富士山パワー全開で突撃しちゃうよ〜っ！」' }
+      ]},
+      { id: 19, name: '長野県', region: '中部', x: 206, y: 272, power: 395, heroines: [
+        { name: '篠原夏希', work: 'サマーウォーズ', role: '軍師', hair: '#78350f', hairStyle: 'ponytail', eye: '#b45309', outfit: '#dc2626', accent: '#fef08a', headgear: 'clip', quote: '「よろしくお願いしまぁぁぁすっ！！陣内家の絆、見せてやる！」' },
+        { name: '風見みずほ', work: 'おねがい☆ティーチャー', role: '巫女', hair: '#ec4899', hairStyle: 'long', eye: '#10b981', outfit: '#f8fafc', accent: '#f472b6', headgear: 'none', quote: '「最優先事項よ♪ 生徒たちを傷つける人は先生がお仕置きします！」' }
+      ]},
+      { id: 20, name: '岐阜県', region: '中部', x: 184, y: 292, power: 375, heroines: [
+        { name: '千反田える', work: '氷菓', role: '軍師', hair: '#0f172a', hairStyle: 'long', eye: '#8b5cf6', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'none', quote: '「私、気になります！この戦いの裏にある勝利の法則が！」' },
+        { name: '伊原摩耶花', work: '氷菓', role: '足軽', hair: '#92400e', hairStyle: 'bob', eye: '#d97706', outfit: '#1e40af', accent: '#fca5a5', headgear: 'clip', quote: '「妥協はしない主義なの。守るべきラインは絶対に死守するわ！」' }
+      ]},
+      { id: 21, name: '静岡県', region: '中部', x: 222, y: 318, power: 415, heroines: [
+        { name: '高海千歌', work: 'ラブライブ！サンシャイン!!', role: '騎兵', hair: '#fb923c', hairStyle: 'sidetail', eye: '#ea580c', outfit: '#0284c7', accent: '#facc15', headgear: 'ribbon', quote: '「奇跡を起こすよ！沼津の海から全国へ、輝きを届けようっ！」' },
+        { name: '渡辺曜', work: 'ラブライブ！サンシャイン!!', role: '鉄砲', hair: '#94a3b8', hairStyle: 'short', eye: '#38bdf8', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'hat', quote: '「全速前進ヨーソロー！狙った的は一発で撃ち抜くよ！」' }
+      ]},
+      { id: 22, name: '愛知県', region: '中部', x: 194, y: 318, power: 320, heroines: [
+        { name: '八奈見杏菜', work: 'マケイン', role: '足軽', hair: '#38bdf8', hairStyle: 'long', eye: '#0284c7', outfit: '#1e293b', accent: '#facc15', headgear: 'ribbon', quote: '「負けヒロインになんてならないんだから！おむすび食べて全力全開！」' },
+        { name: '焼塩檸檬', work: 'マケイン', role: '忍者', hair: '#92400e', hairStyle: 'short', eye: '#f59e0b', outfit: '#334155', accent: '#fde047', headgear: 'headband', quote: '「陸上部のスピードなめんなよ〜！一瞬で背後をとっちゃうから！」' }
+      ]},
+      { id: 23, name: '三重県', region: '近畿', x: 176, y: 342, power: 355, heroines: [
+        { name: '向井戸まなか', work: '凪のあすから', role: '巫女', hair: '#b45309', hairStyle: 'long', eye: '#38bdf8', outfit: '#0369a1', accent: '#bae6fd', headgear: 'clip', quote: '「海と陸をつなぐ祈りを込めて、みんなを優しく包み込みます！」' },
+        { name: '比良平ちさき', work: '凪のあすから', role: '軍師', hair: '#475569', hairStyle: 'bob', eye: '#0284c7', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'none', quote: '「変わらない想いがあるから、どんな嵐の中でも冷静でいられるの」' }
+      ]},
+      { id: 24, name: '滋賀県', region: '近畿', x: 162, y: 306, power: 370, heroines: [
+        { name: '平沢唯', work: 'けいおん！', role: '巫女', hair: '#92400e', hairStyle: 'bob', eye: '#b45309', outfit: '#1e3a8a', accent: '#facc15', headgear: 'clip', quote: '「うんたん♪ ギー太のロック魂でみんな元気にしちゃうよ〜！」' },
+        { name: '田井中律', work: 'けいおん！', role: '騎兵', hair: '#b45309', hairStyle: 'short', eye: '#f59e0b', outfit: '#1e40af', accent: '#facc15', headgear: 'headband', quote: '「りっちゃん隊長のドラムビートに合わせて突撃開始だーっ！」' }
+      ]},
+      { id: 25, name: '京都府', region: '近畿', x: 148, y: 312, power: 425, heroines: [
+        { name: '黄前久美子', work: 'ユーフォニアム', role: '軍師', hair: '#78350f', hairStyle: 'fluffy', eye: '#92400e', outfit: '#1e3a8a', accent: '#ef4444', headgear: 'none', quote: '「全国金賞……いえ、天下統一まで、次の曲が始まるのです！」' },
+        { name: '高坂麗奈', work: 'ユーフォニアム', role: '鉄砲', hair: '#0f172a', hairStyle: 'long', eye: '#7c3aed', outfit: '#1e40af', accent: '#f8fafc', headgear: 'ribbon', quote: '「特別になりたいの。誰にも真似できない一撃を響かせるわ」' }
+      ]},
+      { id: 26, name: '大阪府', region: '近畿', x: 146, y: 336, power: 415, heroines: [
+        { name: '遠山和葉', work: '名探偵コナン', role: '武士', hair: '#78350f', hairStyle: 'ponytail', eye: '#10b981', outfit: '#be123c', accent: '#fde047', headgear: 'ribbon', quote: '「合気道二段の腕前、浪花根性でバッチリ見せたるわ！」' },
+        { name: '春日歩（大阪）', work: 'あずまんが大王', role: '巫女', hair: '#78350f', hairStyle: 'long', eye: '#92400e', outfit: '#334155', accent: '#facc15', headgear: 'none', quote: '「あ〜、なんか不思議な波動が出とるわぁ……ほわわ〜ん」' }
+      ]},
+      { id: 27, name: '兵庫県', region: '近畿', x: 130, y: 320, power: 435, heroines: [
+        { name: '涼宮ハルヒ', work: 'ハルヒの憂鬱', role: '騎兵', hair: '#92400e', hairStyle: 'ponytail', eye: '#d97706', outfit: '#1e3a8a', accent: '#facc15', headgear: 'ribbon', quote: '「ただの人間には興味ありません！このJAPANを面白くするわよ！」' },
+        { name: '長門有希', work: 'ハルヒの憂鬱', role: '軍師', hair: '#a855f7', hairStyle: 'short', eye: '#b45309', outfit: '#1e40af', accent: '#f8fafc', headgear: 'none', quote: '「……情報統合思念体による戦場空間の書き換えを実行する」' }
+      ]},
+      { id: 28, name: '奈良県', region: '近畿', x: 160, y: 344, power: 350, heroines: [
+        { name: '栗山未来', work: '境界の彼方', role: '武士', hair: '#fb7185', hairStyle: 'bob', eye: '#b45309', outfit: '#1e3a8a', accent: '#f43f5e', headgear: 'clip', quote: '「不愉快です！……でも、仲間を守るために血の剣を振るいます！」' },
+        { name: '名瀬美月', work: '境界の彼方', role: '忍者', hair: '#0f172a', hairStyle: 'long', eye: '#475569', outfit: '#1e40af', accent: '#e2e8f0', headgear: 'none', quote: '「名瀬家の異界士として、隙だらけの敵を確実に仕留めるわ」' }
+      ]},
+      { id: 29, name: '和歌山県', region: '近畿', x: 150, y: 368, power: 340, heroines: [
+        { name: '紀伊', work: '艦これ', role: '鉄砲', hair: '#92400e', hairStyle: 'ponytail', eye: '#f59e0b', outfit: '#7f1d1d', accent: '#facc15', headgear: 'crest', quote: '「紀伊型戦艦の主砲、伊達じゃないってとこ見せてやるよ！」' },
+        { name: '雑賀孫市姫', work: '雑賀衆', role: '鉄砲', hair: '#dc2626', hairStyle: 'short', eye: '#facc15', outfit: '#991b1b', accent: '#f8fafc', headgear: 'hat', quote: '「雑賀衆の狙撃に死角なし！八咫烏の名にかけて撃ち抜く！」' }
+      ]},
+      { id: 30, name: '鳥取県', region: '中国', x: 108, y: 312, power: 325, heroines: [
+        { name: '日向美海', work: 'ひなビタ♪', role: '巫女', hair: '#92400e', hairStyle: 'long', eye: '#d97706', outfit: '#f472b6', accent: '#fef08a', headgear: 'ribbon', quote: '「倉吉の街から優しいメロディを♪ みんなに笑顔を届けます！」' },
+        { name: '山形まり花', work: 'ひなビタ♪', role: '軍師', hair: '#fb923c', hairStyle: 'bob', eye: '#10b981', outfit: '#fde047', accent: '#f97316', headgear: 'clip', quote: '「ちくわパフェで気合十分！最高のリズムで勝利を掴むよっ！」' }
+      ]},
+      { id: 31, name: '島根県', region: '中国', x: 84, y: 324, power: 345, heroines: [
+        { name: '出雲', work: '艦これ', role: '巫女', hair: '#1e1b4b', hairStyle: 'long', eye: '#ef4444', outfit: '#f8fafc', accent: '#dc2626', headgear: 'ribbon', quote: '「神々の集う出雲の加護をもって、味方に勝利の縁を結びましょう」' },
+        { name: '八雲紫姫', work: '神話枠', role: '軍師', hair: '#facc15', hairStyle: 'long', eye: '#9333ea', outfit: '#581c87', accent: '#f472b6', headgear: 'hat', quote: '「境界を操る程度には、戦局を見通すことができるわ」' }
+      ]},
+      { id: 32, name: '岡山県', region: '中国', x: 108, y: 334, power: 360, heroines: [
+        { name: 'えりぴよ', work: '推し武道', role: '足軽', hair: '#78350f', hairStyle: 'ponytail', eye: '#ef4444', outfit: '#be123c', accent: '#f8fafc', headgear: 'headband', quote: '「推しが武道館行くまで死ねないっ！鉄壁の愛で全部受け止める！」' },
+        { name: '市井舞菜', work: '推し武道', role: '巫女', hair: '#fb7185', hairStyle: 'bob', eye: '#f43f5e', outfit: '#fce7f3', accent: '#db2777', headgear: 'ribbon', quote: '「岡山から全力で歌って踊って、みなさんにエールを送ります！」' }
+      ]},
+      { id: 33, name: '広島県', region: '中国', x: 84, y: 346, power: 405, heroines: [
+        { name: '沢渡楓', work: 'たまゆら', role: '巫女', hair: '#92400e', hairStyle: 'bob', eye: '#b45309', outfit: '#fef3c7', accent: '#f59e0b', headgear: 'clip', quote: '「竹原の温かい光のように、シャッターを切る一瞬に心を込めます！」' },
+        { name: '毛利てる', work: '戦国ランス', role: '弓兵', hair: '#15803d', hairStyle: 'long', eye: '#10b981', outfit: '#065f46', accent: '#fde047', headgear: 'tiara', quote: '「毛利三本の矢の教え、安芸の弓矢の恐ろしさを教えてあげるわ！」' }
+      ]},
+      { id: 34, name: '山口県', region: '中国', x: 58, y: 362, power: 425, heroines: [
+        { name: '綾波レイ', work: 'エヴァンゲリオン', role: '足軽', hair: '#60a5fa', hairStyle: 'short', eye: '#ef4444', outfit: '#f8fafc', accent: '#3b82f6', headgear: 'clip', quote: '「私が守るから……あなたは死なないわ。命令を遂行する」' },
+        { name: '式波・アスカ', work: 'エヴァンゲリオン', role: '騎兵', hair: '#ea580c', hairStyle: 'twintail', eye: '#3b82f6', outfit: '#dc2626', accent: '#facc15', headgear: 'clip', quote: '「あんたバカぁ！？私の圧倒的戦力で一瞬で片付けてあげるわ！」' }
+      ]},
+      { id: 35, name: '徳島県', region: '四国', x: 128, y: 366, power: 340, heroines: [
+        { name: '阿波', work: '艦これ', role: '騎兵', hair: '#7c3aed', hairStyle: 'ponytail', eye: '#a855f7', outfit: '#4c1d95', accent: '#fde047', headgear: 'crest', quote: '「阿波踊りのリズムで敵陣を翻弄！踊らにゃ損々ってね！」' },
+        { name: '鳴門うず潮娘', work: '阿波戦姫', role: '軍師', hair: '#0284c7', hairStyle: 'long', eye: '#38bdf8', outfit: '#0369a1', accent: '#bae6fd', headgear: 'ribbon', quote: '「鳴門の渦潮のように、敵軍を戦術の渦へと飲み込みます！」' }
+      ]},
+      { id: 36, name: '香川県', region: '四国', x: 118, y: 352, power: 355, heroines: [
+        { name: '高木さん', work: 'からかい上手の高木さん', role: '忍者', hair: '#78350f', hairStyle: 'long', eye: '#92400e', outfit: '#1e3a8a', accent: '#f8fafc', headgear: 'none', quote: '「ふふっ、考えていること全部お見通しだよ？勝負は私の勝ちだね♪」' },
+        { name: '結城友奈', work: 'ゆゆゆ', role: '武士', hair: '#f472b6', hairStyle: 'bob', eye: '#ec4899', outfit: '#fce7f3', accent: '#db2777', headgear: 'clip', quote: '「勇者部五箇条！なせば大抵なんとかなる！全力パンチだーっ！」' }
+      ]},
+      { id: 37, name: '愛媛県', region: '四国', x: 92, y: 370, power: 350, heroines: [
+        { name: '伊予', work: '艦これ', role: '弓兵', hair: '#f97316', hairStyle: 'bob', eye: '#ea580c', outfit: '#9a3412', accent: '#fde047', headgear: 'crest', quote: '「伊予の瀬戸内海から、正確な長距離射撃で援護するよ！」' },
+        { name: '道後いよかん娘', work: '伊予戦姫', role: '巫女', hair: '#fb923c', hairStyle: 'twintail', eye: '#10b981', outfit: '#fef3c7', accent: '#f97316', headgear: 'ribbon', quote: '「道後温泉の湯けむりと柑橘の香りで、体力全快にしちゃいます！」' }
+      ]},
+      { id: 38, name: '高知県', region: '四国', x: 112, y: 386, power: 365, heroines: [
+        { name: '内藤鈴（ベル）', work: '竜とそばかすの姫', role: '巫女', hair: '#f472b6', hairStyle: 'long', eye: '#38bdf8', outfit: '#be185d', accent: '#fbcfe8', headgear: 'tiara', quote: '「仁淀川の清流のように澄んだ歌声で、みんなの心に奇跡を届けます！」' },
+        { name: '坂本おりょう', work: 'タクガ', role: '鉄砲', hair: '#1e1b4b', hairStyle: 'ponytail', eye: '#f59e0b', outfit: '#7f1d1d', accent: '#fde047', headgear: 'ribbon', quote: '「土佐の海風は自由ぜよ！最新式の連発銃で道を切り開く！」' }
+      ]},
+      { id: 39, name: '福岡県', region: '九州', x: 46, y: 386, power: 420, heroines: [
+        { name: '一ノ瀬花名', work: 'スロウスタート', role: '巫女', hair: '#f472b6', hairStyle: 'long', eye: '#ec4899', outfit: '#1e3a8a', accent: '#fbcfe8', headgear: 'ribbon', quote: '「一歩ずつでも大丈夫……博多からみんなで一緒に前へ進みましょう！」' },
+        { name: '千石冠', work: 'スロウスタート', role: '忍者', hair: '#fde047', hairStyle: 'twintail', eye: '#10b981', outfit: '#065f46', accent: '#fef08a', headgear: 'clip', quote: '「ちっちゃくても素早さは一番！一瞬で敵の懐に飛び込むよ！」' }
+      ]},
+      { id: 40, name: '佐賀県', region: '九州', x: 32, y: 398, power: 385, heroines: [
+        { name: '源さくら', work: 'ゾンビランドサガ', role: '足軽', hair: '#fb7185', hairStyle: 'bob', eye: '#38bdf8', outfit: '#1e293b', accent: '#f43f5e', headgear: 'ribbon', quote: '「どやんすどやんす！？でも佐賀を救うためなら何度でも立ち上がるばい！」' },
+        { name: '紺野純子', work: 'ゾンビランドサガ', role: '軍師', hair: '#cbd5e1', hairStyle: 'fluffy', eye: '#64748b', outfit: '#334155', accent: '#f8fafc', headgear: 'none', quote: '「昭和のアイドルの意地にかけて、一糸乱れぬ陣形をお見せします！」' }
+      ]},
+      { id: 41, name: '長崎県', region: '九州', x: 18, y: 412, power: 375, heroines: [
+        { name: '月白瞳美', work: '色づく世界の明日から', role: '軍師', hair: '#475569', hairStyle: 'long', eye: '#92400e', outfit: '#1e3a8a', accent: '#facc15', headgear: 'none', quote: '「長崎の坂道と星砂の魔法……世界に鮮やかな勝利の色を取り戻します」' },
+        { name: '月白琥珀', work: '色づく世界の明日から', role: '巫女', hair: '#d97706', hairStyle: 'braid', eye: '#10b981', outfit: '#065f46', accent: '#fde047', headgear: 'hat', quote: '「時を超える大魔法使い・琥珀にお任せあれ！ド派手に支援するわよ〜！」' }
+      ]},
+      { id: 42, name: '熊本県', region: '九州', x: 44, y: 420, power: 390, heroines: [
+        { name: '鶴木陽渚', work: '放課後ていぼう日誌', role: '弓兵', hair: '#92400e', hairStyle: 'ponytail', eye: '#0284c7', outfit: '#1e40af', accent: '#f8fafc', headgear: 'hat', quote: '「芦北の海で鍛えたキャスティング精度、一投必中で仕留めます！」' },
+        { name: '黒岩悠希', work: '放課後ていぼう日誌', role: '軍師', hair: '#0f172a', hairStyle: 'long', eye: '#475569', outfit: '#1e293b', accent: '#facc15', headgear: 'none', quote: '「ていぼう部部長の指示に従えば間違いなかよ。じっくり追い込むばい」' }
+      ]},
+      { id: 43, name: '大分県', region: '九州', x: 64, y: 404, power: 350, heroines: [
+        { name: '宇佐', work: '艦これ', role: '巫女', hair: '#f8fafc', hairStyle: 'long', eye: '#ef4444', outfit: '#dc2626', accent: '#fef08a', headgear: 'ribbon', quote: '「おんせん県おおいたの秘湯パワーで、軍団の疲れも一瞬で癒やします！」' },
+        { name: '大友宗麟姫', work: '豊後戦姫', role: '鉄砲', hair: '#7c3aed', hairStyle: 'hime', eye: '#facc15', outfit: '#4c1d95', accent: '#fde047', headgear: 'tiara', quote: '「南蛮渡来の国崩し大砲、豊後の火力を思い知るがよい！」' }
+      ]},
+      { id: 44, name: '宮崎県', region: '九州', x: 60, y: 438, power: 355, heroines: [
+        { name: '日向', work: '艦これ', role: '武士', hair: '#451a03', hairStyle: 'ponytail', eye: '#b45309', outfit: '#7f1d1d', accent: '#facc15', headgear: 'crest', quote: '「南国日向の太陽のように熱く、真っ向勝負で斬り込むぞ！」' },
+        { name: '高千穂神楽姫', work: '日向神話', role: '巫女', hair: '#1e1b4b', hairStyle: 'long', eye: '#f59e0b', outfit: '#f8fafc', accent: '#dc2626', headgear: 'tiara', quote: '「天岩戸を開く神楽の舞で、味方全員の士気を最高潮に高めます！」' }
+      ]},
+      { id: 45, name: '鹿児島県', region: '九州', x: 42, y: 462, power: 430, heroines: [
+        { name: '柚原柚美', work: '戦国ランス', role: '鉄砲', hair: '#fb7185', hairStyle: 'twintail', eye: '#e11d48', outfit: '#9f1239', accent: '#fde047', headgear: 'ribbon', quote: '「種子島鉄砲隊の精鋭、柚原柚美参上ですっ！狙いは外しません！」' },
+        { name: '澄田花音', work: '秒速5センチメートル', role: '騎兵', hair: '#92400e', hairStyle: 'short', eye: '#d97706', outfit: '#0284c7', accent: '#bae6fd', headgear: 'none', quote: '「種子島の波に乗って、どこまでも遠くへ突き進むって決めたんだ！」' }
+      ]},
+      { id: 46, name: '沖縄県', region: '沖縄', x: 18, y: 516, power: 380, heroines: [
+        { name: '海咲野くくる', work: '白い砂のアクアトープ', role: '軍師', hair: '#1e3a8a', hairStyle: 'bob', eye: '#0284c7', outfit: '#0369a1', accent: '#38bdf8', headgear: 'clip', quote: '「めんそーれ！がまがま水族館の館長として、絶対にこの場所を守り抜く！」' },
+        { name: '宮沢風花', work: '白い砂のアクアトープ', role: '巫女', hair: '#d97706', hairStyle: 'long', eye: '#10b981', outfit: '#fef3c7', accent: '#f59e0b', headgear: 'ribbon', quote: '「沖縄の青い海と太陽のエネルギーで、みんなを笑顔にしますね♪」' }
+      ]}
+    ];
+
+    const ADJACENCY = {
+      0: [1], 1: [0, 2, 4], 2: [1, 3, 4], 3: [2, 4, 5, 6], 4: [1, 2, 3, 5], 5: [3, 4, 6, 14],
+      6: [3, 5, 7, 8, 9, 14], 7: [6, 8, 10, 11], 8: [6, 7, 9, 10], 9: [6, 8, 10, 14, 19],
+      10: [7, 8, 9, 12, 18], 11: [7, 10, 12], 12: [10, 11, 13, 18], 13: [12, 18, 21],
+      14: [5, 6, 9, 15, 19], 15: [14, 16, 19, 20], 16: [15, 17, 20], 17: [16, 20, 24, 25],
+      18: [10, 12, 13, 19, 21], 19: [9, 14, 15, 18, 20, 21, 22], 20: [15, 16, 17, 19, 22, 23, 24],
+      21: [13, 18, 19, 22], 22: [19, 20, 21, 23], 23: [20, 22, 24, 25, 28, 29],
+      24: [17, 20, 23, 25], 25: [17, 23, 24, 26, 27, 28], 26: [25, 27, 28, 29],
+      27: [25, 26, 30, 32, 35], 28: [23, 25, 26, 29], 29: [23, 26, 28, 35], 30: [27, 31, 32, 33],
+      31: [30, 33, 34], 32: [27, 30, 33, 36], 33: [30, 31, 32, 34, 37], 34: [31, 33, 39],
+      35: [27, 29, 36, 37, 38], 36: [32, 35, 37], 37: [33, 35, 36, 38, 43], 38: [35, 37],
+      39: [34, 40, 42, 43], 40: [39, 41], 41: [40, 42], 42: [39, 41, 43, 44, 45],
+      43: [37, 39, 42, 44], 44: [42, 43, 45], 45: [42, 44, 46], 46: [45]
+    };
+
+    const STORAGE_KEY_PREFIX = 'sengoku_rance_vip_v4_slot_';
+
+    // =========================================================================
+    // 4. GAME STATE, GARRISON STATIONING & ADV STORY QUEUE
+    // =========================================================================
+    const Game = {
+      screen: 'title',
+      turn: 1,
+      gold: 1200,
+      satisfaction: 10,
+      ap: 2,
+      maxAp: 2,
+      selectedPrefId: 22,
+      roster: [],
+      prisoners: [],
+      prefStates: [],
+      pendingDeleteSlot: null,
+
+      storyQueue: [],
+      storyIdx: 0,
+      storyLeftUnit: null,
+      storyRightUnit: null,
+      storyChoices: null,
+      storyOnFinish: null,
+
+      battle: null,
+      animTime: 0,
+      shakeTimer: 0,
+      shakeMag: 0,
+      mapToastTimer: 0
+    };
+
+    function makeUnitFromHeroine(h, prefName) {
+      const roleStats = {
+        '武士': { hp: 365, atk: 70, def: 46, ap: 1 },
+        '足軽': { hp: 420, atk: 54, def: 64, ap: 1 },
+        '軍師': { hp: 305, atk: 52, def: 40, ap: 1 },
+        '巫女': { hp: 310, atk: 44, def: 38, ap: 1 },
+        '弓兵': { hp: 325, atk: 74, def: 34, ap: 1 },
+        '鉄砲': { hp: 330, atk: 82, def: 32, ap: 1 },
+        '騎兵': { hp: 355, atk: 74, def: 42, ap: 1 },
+        '忍者': { hp: 310, atk: 64, def: 36, ap: 2 }
+      }[h.role] || { hp: 335, atk: 64, def: 42, ap: 1 };
+
+      const skillSet = buildSpecializedSkillsForRole(h.role, h.name);
+
+      return {
+        id: 'h_' + h.name,
+        name: h.name,
+        title: `${prefName}・${h.work}`,
+        role: h.role,
+        hair: h.hair,
+        hairStyle: h.hairStyle,
+        eye: h.eye,
+        outfit: h.outfit,
+        accent: h.accent,
+        headgear: h.headgear || 'none',
+        hp: roleStats.hp,
+        maxHp: roleStats.hp,
+        atk: roleStats.atk,
+        def: roleStats.def,
+        ap: roleStats.ap,
+        normalSkills: skillSet.normalSkills,
+        ultimate: skillSet.ultimate,
+        skillName: skillSet.ultimate.name,
+        skillQuote: skillSet.ultimate.quote,
+        quote: h.quote,
+        recruitQuote: `「${prefName}の代表として、今日からランス様の軍勢に力を貸します！」`,
+        affection: 20,
+        stationedPrefId: null
+      };
+    }
+
+    function initNewCampaign() {
+      Game.turn = 1;
+      Game.gold = 1200;
+      Game.satisfaction = 10;
+      Game.ap = 2;
+      Game.maxAp = 2;
+      Game.selectedPrefId = 22;
+
+      Game.roster = [
+        { ...CHARACTERS.rance, stationedPrefId: 22 },
+        { ...CHARACTERS.nobunaga, stationedPrefId: 22 },
+        { ...CHARACTERS.kouhime, stationedPrefId: 22 },
+        { ...CHARACTERS.sill, stationedPrefId: 22 }
+      ];
+      Game.prisoners = [];
+
+      Game.prefStates = PREFECTURES.map((p) => {
+        const isStart = p.id === 22;
+        const defenders = p.heroines.map((h) => makeUnitFromHeroine(h, p.name));
+        if (p.id === 14) defenders.unshift({ ...CHARACTERS.kenshin });
+        if (p.id === 21) defenders.unshift({ ...CHARACTERS.senhime });
+        if (p.id === 23) defenders.unshift({ ...CHARACTERS.suzume });
+        return {
+          id: p.id,
+          owner: isStart ? 'player' : 'enemy',
+          garrison: isStart ? 360 : p.power,
+          maxGarrison: isStart ? 360 : p.power,
+          defenders,
+          stationedIds: isStart ? ['rance', 'nobunaga', 'kouhime', 'sill'] : []
+        };
+      });
+    }
+
+    function getStationedUnitsForPref(prefId) {
+      const st = Game.prefStates[prefId];
+      if (!st || !Array.isArray(st.stationedIds)) return [];
+      return st.stationedIds
+        .map((id) => Game.roster.find((u) => u.id === id))
+        .filter(Boolean);
+    }
+
+    function assignUnitToPref(unitId, targetPrefId) {
+      const unit = Game.roster.find((u) => u.id === unitId);
+      const targetSt = Game.prefStates[targetPrefId];
+      if (!unit || !targetSt || targetSt.owner !== 'player') return false;
+
+      if (unit.stationedPrefId !== null && unit.stationedPrefId !== undefined) {
+        const prevSt = Game.prefStates[unit.stationedPrefId];
+        if (prevSt && Array.isArray(prevSt.stationedIds)) {
+          prevSt.stationedIds = prevSt.stationedIds.filter((id) => id !== unitId);
+        }
+      }
+
+      if (!Array.isArray(targetSt.stationedIds)) targetSt.stationedIds = [];
+      if (targetSt.stationedIds.includes(unitId)) return true;
+
+      if (targetSt.stationedIds.length >= 4) {
+        const kickedId = targetSt.stationedIds.shift();
+        const kickedUnit = Game.roster.find((u) => u.id === kickedId);
+        if (kickedUnit) kickedUnit.stationedPrefId = null;
+      }
+
+      targetSt.stationedIds.push(unitId);
+      unit.stationedPrefId = targetPrefId;
+      return true;
+    }
+
+    function playOpeningSequence() {
+      const steps = [
+        {
+          chapter: '序章・戦国JAPAN開幕',
+          speaker: 'ランス',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.sill,
+          text: '「ガハハハ！ここが東方の島国JAPANか！\n47都道府県すべてに美少女ヒロインがいるって聞いたぜ！」'
+        },
+        {
+          chapter: '序章・尾張同盟',
+          speaker: '織田信長',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.nobunaga,
+          text: '「よくぞ参ったランスよ！我ら織田家は今や尾張（愛知県）一国のみ。\nだがお主の破天荒な武勇があれば、天下統一も夢ではない！」'
+        },
+        {
+          chapter: '序章・技の個性と領土防衛',
+          speaker: '香姫',
+          leftUnit: CHARACTERS.kouhime,
+          rightUnit: CHARACTERS.sill,
+          text: '「各武将は固有の通常技と合戦1回限りの必殺技を持っています。\nまた、領土が1国になっても敵は攻めてきます……ご注意くださいませ！」'
+        }
+      ];
+
+      startStory(steps, () => {
+        VipAudio.playTrack(1);
+        setScreen('map');
+        renderMap();
+        syncMapHud();
+        showMapToast('愛知県から全国制覇スタート！隣接国へ侵攻しよう');
+      });
+    }
+
+    function playRetreatSequence(prefName, companion) {
+      VipAudio.playTrack(6);
+      const partner = companion || CHARACTERS.sill;
+      const steps = [
+        {
+          chapter: `🏳️ 撤退ADV・${prefName}戦線離脱`,
+          speaker: partner.name,
+          leftUnit: CHARACTERS.rance,
+          rightUnit: partner,
+          text: `「ランス様、これ以上の深追いは危険です！\n${prefName}の敵陣が厚すぎます……今は一度引きましょう！」`
+        },
+        {
+          chapter: '🏳️ 撤退ADV・再起の誓い',
+          speaker: 'ランス',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: partner,
+          text: `「チッ、面倒くせぇな！${prefName}の野郎ども、HPはしっかり削っといてやったぜ。\n態勢を整えて、またすぐ殴り込みに来てやるからな！！」`
+        }
+      ];
+
+      startStory(steps, () => {
+        VipAudio.playTrack(1);
+        setScreen('map');
+        syncMapHud();
+        renderMap();
+        showMapToast(`🏳️ ${prefName}から撤退！削った敵HPは維持されている`);
+      });
+    }
+
+    function playEndingSequence() {
+      VipAudio.playTrack(4);
+      const steps = [
+        {
+          chapter: '終章・JAPAN完全統一',
+          speaker: '香姫',
+          leftUnit: CHARACTERS.kouhime,
+          rightUnit: CHARACTERS.nobunaga,
+          text: `「ついに……47都道府県すべてに織田・ランス軍の旗が翻りました！\n${Game.turn}ターンの激闘を乗り越え、JAPANに平和と笑顔が戻ったのです……！」`
+        },
+        {
+          chapter: '終章・戦友たちの涙',
+          speaker: '織田信長',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.nobunaga,
+          text: '「見事であったぞランスよ。お主と出会い、全国の姫たちと手を取り合えたこと……余の生涯最大の誇りである！」'
+        },
+        {
+          chapter: '終章・永遠の約束',
+          speaker: 'シィル',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.sill,
+          text: '「ランス様……どんな強敵の前でも決して諦めないお姿、ずっとおそばで見ていました。\nこれからもずっと、シィルを連れていってくださいね……！」'
+        },
+        {
+          chapter: '終章・俺様の天下',
+          speaker: 'ランス',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.kouhime,
+          text: `「ガハハハ！泣くな泣くなお前ら！\n仲間${Game.roster.length}名・満足度${Game.satisfaction}達成！俺様とヒロインたちの伝説はここからが本番だぜ！！」`
+        }
+      ];
+
+      startStory(steps, () => {
+        writeSaveSlot(0, buildSaveData('天下統一クリア！'));
+        setScreen('title');
+        showMapToast('祝・天下統一達成！オートセーブに記録しました');
+      });
+    }
+
+    function playBadEndSequence(fallenPrefName, enemyLeader) {
+      VipAudio.playTrack(6);
+      const steps = [
+        {
+          chapter: '💔 BAD END・最後の領土陥落',
+          speaker: enemyLeader ? enemyLeader.name : '敵将',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: enemyLeader || CHARACTERS.kenshin,
+          text: `「${fallenPrefName}陥落……！これにてランス軍の拠点はすべて潰えた！\nJAPANの覇者は我らがいただく！！」`
+        },
+        {
+          chapter: '💔 BAD END・夕闇の撤退戦',
+          speaker: 'シィル',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.sill,
+          text: '「ランス様……！領地がひとつもなくなってしまいました……！\nでも、シィルは最後までランス様をお慕いしています……！」'
+        },
+        {
+          chapter: '💔 BAD END・鬼畜戦士の再起',
+          speaker: 'ランス',
+          leftUnit: CHARACTERS.rance,
+          rightUnit: CHARACTERS.kouhime,
+          text: `「チクショウ……！第${Game.turn}ターンで領土0国かよ……！\nだが覚えてやがれ！俺様は何度でも這い上がってJAPANを奪い返してやるぜ！！」`
+        }
+      ];
+
+      startStory(steps, () => {
+        setScreen('title');
+        showMapToast('BAD END到達！セーブデータから再挑戦するか、初めからやり直そう');
+      });
+    }
+
+    function startStory(steps, onFinish) {
+      Game.storyQueue = steps;
+      Game.storyIdx = 0;
+      Game.storyOnFinish = onFinish;
+      setScreen('story');
+      renderStoryStep();
+    }
+
+    function renderStoryStep() {
+      const step = Game.storyQueue[Game.storyIdx];
+      if (!step) {
+        if (Game.storyOnFinish) Game.storyOnFinish();
+        return;
+      }
+      Game.storyLeftUnit = step.leftUnit || step.unit || CHARACTERS.rance;
+      Game.storyRightUnit = step.rightUnit || null;
+      Game.storyChoices = step.choices || null;
+
+      const chEl = document.getElementById('story-chapter-tag');
+      const spEl = document.getElementById('story-speaker');
+      const pgEl = document.getElementById('story-page-indicator');
+      const txEl = document.getElementById('story-text');
+      const actEl = document.getElementById('story-actions');
+      const skipBtn = document.getElementById('btn-story-skip');
+
+      if (chEl) chEl.textContent = step.chapter || '物語イベント';
+      if (spEl) spEl.textContent = step.speaker || '';
+      if (pgEl) pgEl.textContent = `${Game.storyIdx + 1} / ${Game.storyQueue.length}`;
+      if (txEl) txEl.textContent = step.text || '';
+      if (skipBtn) skipBtn.classList.toggle('hidden', Boolean(step.choices));
+
+      if (actEl) {
+        if (Array.isArray(step.choices) && step.choices.length > 0) {
+          actEl.innerHTML = '';
+          step.choices.forEach((ch) => {
+            const btn = document.createElement('button');
+            btn.className = `vip-btn ${ch.style || 'vip-btn-gold'} px-3 py-1.5 rounded-xl font-black text-xs`;
+            btn.textContent = ch.label;
+            btn.addEventListener('click', () => {
+              VipAudio.sfx.ui();
+              if (ch.onSelect) ch.onSelect();
+            });
+            actEl.appendChild(btn);
+          });
+        } else {
+          actEl.innerHTML = `
+            <button id="btn-story-next-dyn" class="vip-btn vip-btn-gold px-4 py-1.5 rounded-xl font-black text-xs">
+              次へ進む ▶ [Space/Enter]
+            </button>
+          `;
+          onId('btn-story-next-dyn', 'click', advanceStory);
+        }
+      }
+    }
+
+    function advanceStory() {
+      const step = Game.storyQueue[Game.storyIdx];
+      if (step && step.choices) return;
+      VipAudio.sfx.ui();
+      Game.storyIdx += 1;
+      if (Game.storyIdx >= Game.storyQueue.length) {
+        if (Game.storyOnFinish) Game.storyOnFinish();
+      } else {
+        renderStoryStep();
+      }
+    }
+
+    // =========================================================================
+    // 5. SAVE / LOAD / DELETE SYSTEM
+    // =========================================================================
+    function buildSaveData(note = '') {
+      return {
+        savedAt: new Date().toLocaleString('ja-JP', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        note,
+        turn: Game.turn,
+        gold: Game.gold,
+        satisfaction: Game.satisfaction,
+        ap: Game.ap,
+        maxAp: Game.maxAp,
+        selectedPrefId: Game.selectedPrefId,
+        roster: Game.roster,
+        prisoners: Game.prisoners,
+        prefStates: Game.prefStates
+      };
+    }
+
+    function writeSaveSlot(slot, data) {
+      try {
+        localStorage.setItem(`${STORAGE_KEY_PREFIX}${slot}`, JSON.stringify(data));
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function readSaveSlot(slot) {
+      try {
+        const raw = localStorage.getItem(`${STORAGE_KEY_PREFIX}${slot}`);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function deleteSaveSlot(slot) {
+      try {
+        localStorage.removeItem(`${STORAGE_KEY_PREFIX}${slot}`);
+      } catch (_) {}
+    }
+
+    function loadSaveData(data) {
+      if (!data || !Array.isArray(data.prefStates)) return false;
+      Game.turn = data.turn || 1;
+      Game.gold = data.gold ?? 1200;
+      Game.satisfaction = data.satisfaction ?? 10;
+      Game.ap = data.ap ?? 2;
+      Game.maxAp = data.maxAp ?? 2;
+      Game.selectedPrefId = data.selectedPrefId ?? 22;
+      Game.roster = Array.isArray(data.roster) ? data.roster : [];
+      Game.prisoners = Array.isArray(data.prisoners) ? data.prisoners : [];
+      Game.prefStates = data.prefStates;
+      return true;
+    }
+
+    // =========================================================================
+    // 6. STRATEGIC TURN COMMANDS & INVASIONS EVEN WHEN 1 TERRITORY REMAINS
+    // =========================================================================
+    function isAdjacentToPlayer(prefId) {
+      const st = Game.prefStates[prefId];
+      if (!st || st.owner === 'player') return false;
+      const neighbors = ADJACENCY[prefId] || [];
+      return neighbors.some((nid) => Game.prefStates[nid] && Game.prefStates[nid].owner === 'player');
+    }
+
+    function showMapToast(msg) {
+      const el = document.getElementById('map-toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      Game.mapToastTimer = 2.8;
+    }
+
+    function syncMapHud() {
+      const owned = Game.prefStates.filter((s) => s.owner === 'player').length;
+      const tEl = document.getElementById('hud-turn');
+      const terEl = document.getElementById('hud-territory');
+      const gEl = document.getElementById('hud-gold');
+      const satEl = document.getElementById('hud-satisfaction');
+      const apEl = document.getElementById('hud-ap');
+      const rosEl = document.getElementById('hud-roster-count');
+
+      if (tEl) tEl.textContent = `第${Game.turn}ターン`;
+      if (terEl) terEl.textContent = `領土 ${owned} / 47`;
+      if (gEl) gEl.textContent = `💰 ${Game.gold}両`;
+      if (satEl) satEl.textContent = `${Game.satisfaction}`;
+      if (apEl) apEl.textContent = `${Game.ap} / ${Game.maxAp}`;
+      if (rosEl) rosEl.textContent = `${Game.roster.length}名 / 捕虜${Game.prisoners.length}`;
+
+      const pref = PREFECTURES[Game.selectedPrefId] || PREFECTURES[22];
+      const st = Game.prefStates[pref.id];
+      const adj = isAdjacentToPlayer(pref.id);
+
+      const badge = document.getElementById('sel-pref-owner-badge');
+      const nameEl = document.getElementById('sel-pref-name');
+      const pwrEl = document.getElementById('sel-pref-power');
+      const herEl = document.getElementById('sel-pref-heroines');
+      const invBtn = document.getElementById('cmd-invade');
+
+      if (badge) {
+        if (st.owner === 'player') {
+          badge.textContent = '自領';
+          badge.className = 'px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-400 text-stone-950';
+        } else if (adj) {
+          badge.textContent = '隣接敵領';
+          badge.className = 'px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-600 text-white';
+        } else {
+          badge.textContent = '遠隔敵領';
+          badge.className = 'px-1.5 py-0.5 rounded text-[9px] font-black bg-indigo-700 text-white';
+        }
+      }
+      if (nameEl) nameEl.textContent = `${pref.name}（${pref.region}）`;
+
+      if (st.owner === 'player') {
+        const stationed = getStationedUnitsForPref(pref.id);
+        const totalHp = stationed.reduce((acc, u) => acc + u.hp, 0);
+        if (pwrEl) pwrEl.textContent = `駐留戦力 ${totalHp}`;
+        if (herEl) {
+          herEl.textContent = stationed.length > 0
+            ? `防衛駐留(${stationed.length}/4)：${stationed.map((u) => `${u.name}(HP:${u.hp})`).join(' / ')}`
+            : '防衛駐留：0名（[3]編成/配置で防衛武将を配置しよう！）';
+        }
+      } else {
+        if (pwrEl) pwrEl.textContent = `守備兵力 ${Math.round(st.garrison)}`;
+        if (herEl) {
+          const names = st.defenders.map((d) => `${d.name}(HP:${Math.round(d.hp)})`).join(' / ');
+          herEl.textContent = names ? `敵将：${names}` : '敵将：守備隊のみ';
+        }
+      }
+
+      if (invBtn) {
+        invBtn.disabled = !(st.owner === 'enemy' && adj && Game.ap > 0);
+      }
+    }
+
+    function executeReinforce() {
+      if (Game.ap <= 0) {
+        showMapToast('行動力が足りません！ターン終了で回復します');
+        return;
+      }
+      const cost = 350;
+      if (Game.gold < cost) {
+        showMapToast(`軍資金が足りません（必要: ${cost}両）`);
+        return;
+      }
+      VipAudio.sfx.heal();
+      Game.gold -= cost;
+      Game.ap -= 1;
+
+      for (const u of Game.roster) {
+        u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * 0.55));
+      }
+      syncMapHud();
+      showMapToast('🛡️ 全武将の兵力(HP)が大幅回復した！');
+    }
+
+    function executeHotSpringReward() {
+      if (Game.ap <= 0) {
+        showMapToast('行動力が足りません！');
+        return;
+      }
+      if (Game.gold < 300) {
+        showMapToast('軍資金300両が必要です！');
+        return;
+      }
+      const candidates = Game.roster.filter((u) => u.id !== 'rance');
+      const heroine = candidates[Math.floor(Math.random() * candidates.length)] || CHARACTERS.kouhime;
+      Game.gold -= 300;
+      Game.ap -= 1;
+      Game.satisfaction += 10;
+      heroine.affection = (heroine.affection || 20) + 15;
+      heroine.atk += 5;
+      heroine.hp = heroine.maxHp;
+
+      VipAudio.playTrack(3);
+      startStory(
+        [
+          {
+            chapter: '♨️ 秘湯・お色気ごほうびイベント',
+            speaker: heroine.name,
+            leftUnit: CHARACTERS.rance,
+            rightUnit: heroine,
+            text: `「きゃっ……！ラ、ランス様！？ここは女湯ですわよ……！\nもう、仕方ない人ですね……少しだけならお背中をお流しします……♥」`
+          },
+          {
+            chapter: '♨️ 満足度上昇！',
+            speaker: 'ランス',
+            leftUnit: CHARACTERS.rance,
+            rightUnit: heroine,
+            text: `「ガハハハ！最高だぜ${heroine.name}！\n満足度が10上昇し、${heroine.name}の攻撃力＆兵力も全快だ！」`
+          }
+        ],
+        () => {
+          VipAudio.playTrack(1);
+          setScreen('map');
+          syncMapHud();
+          renderMap();
+        }
+      );
+    }
+
+    function executeSatisfactionBonus() {
+      if (Game.satisfaction < 20) {
+        showMapToast(`満足度が20以上必要です（現在: ${Game.satisfaction}）`);
+        return;
+      }
+      VipAudio.sfx.victory();
+      Game.satisfaction -= 20;
+      Game.maxAp = Math.min(4, Game.maxAp + 1);
+      Game.ap = Game.maxAp;
+      Game.gold += 800;
+      for (const u of Game.roster) {
+        u.atk += 6;
+        u.hp = u.maxHp;
+      }
+      syncMapHud();
+      showMapToast('👑 大満足ボーナス発動！最大行動力+1＆全軍攻撃力UP＆800両獲得！');
+    }
+
+    function endPlayerTurn() {
+      VipAudio.sfx.ui();
+      Game.turn += 1;
+
+      const ownedPrefs = Game.prefStates.filter((s) => s.owner === 'player');
+      const income = ownedPrefs.length * 190 + 250;
+      Game.gold += income;
+
+      for (const u of Game.roster) {
+        u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * 0.14));
+      }
+      for (const st of Game.prefStates) {
+        if (st.owner === 'enemy') {
+          st.garrison = Math.min(st.maxGarrison, st.garrison + 28);
+          for (const d of st.defenders) {
+            d.hp = Math.min(d.maxHp, d.hp + Math.round(d.maxHp * 0.15));
+          }
+        }
+      }
+
+      Game.ap = Game.maxAp;
+      writeSaveSlot(0, buildSaveData('オートセーブ'));
+
+      if (ownedPrefs.length >= 1) {
+        const invChance = ownedPrefs.length === 1 ? 0.72 : 0.56;
+        if (Math.random() < invChance) {
+          const borderOwned = ownedPrefs.filter((pSt) =>
+            (ADJACENCY[pSt.id] || []).some((nid) => Game.prefStates[nid].owner === 'enemy')
+          );
+          if (borderOwned.length > 0) {
+            const targetPrefState = borderOwned[Math.floor(Math.random() * borderOwned.length)];
+            const enemyNeighbors = (ADJACENCY[targetPrefState.id] || [])
+              .map((nid) => Game.prefStates[nid])
+              .filter((s) => s.owner === 'enemy');
+            const attackerState = enemyNeighbors[Math.floor(Math.random() * enemyNeighbors.length)];
+            if (attackerState) {
+              triggerEnemyDefenseEvent(targetPrefState.id, attackerState.id);
+              return;
+            }
+          }
+        }
+      }
+
+      syncMapHud();
+      renderMap();
+      showMapToast(`第${Game.turn}ターン開始！領地収入 +${income}両`);
+    }
+
+    function handleTerritoryLost(defendPrefId, attackerPrefId) {
+      const defPref = PREFECTURES[defendPrefId];
+      const atkSt = Game.prefStates[attackerPrefId];
+      const enemyLeader = (atkSt && atkSt.defenders[0]) || CHARACTERS.kenshin;
+      const defSt = Game.prefStates[defendPrefId];
+
+      defSt.owner = 'enemy';
+      defSt.garrison = 240;
+      for (const u of getStationedUnitsForPref(defendPrefId)) u.stationedPrefId = null;
+      defSt.stationedIds = [];
+
+      const remainingOwned = Game.prefStates.filter((s) => s.owner === 'player').length;
+      if (remainingOwned <= 0) {
+        playBadEndSequence(defPref.name, enemyLeader);
+        return true;
+      }
+
+      Game.gold += 500;
+      Game.satisfaction += 5;
+      VipAudio.playTrack(1);
+      setScreen('map');
+      syncMapHud();
+      renderMap();
+      showMapToast(`🏳️ ${defPref.name}を失陥（残領土 ${remainingOwned} / 逆転軍資金+500両）`);
+      return false;
+    }
+
+    function triggerEnemyDefenseEvent(defendPrefId, attackerPrefId) {
+      const defPref = PREFECTURES[defendPrefId];
+      const atkPref = PREFECTURES[attackerPrefId];
+      const atkSt = Game.prefStates[attackerPrefId];
+      const enemyLeader = atkSt.defenders[0] || CHARACTERS.kenshin;
+      const stationed = getStationedUnitsForPref(defendPrefId);
+      const defenderLeader = stationed[0] || CHARACTERS.kouhime;
+      const isLastLand = Game.prefStates.filter((s) => s.owner === 'player').length === 1;
+
+      VipAudio.sfx.alarm();
+      VipAudio.playTrack(5);
+
+      const stationedSummary = stationed.length > 0
+        ? `駐留防衛部隊：${stationed.map((u) => `${u.name}(HP:${u.hp})`).join('・')}`
+        : '⚠️ 警告：この国には防衛武将が駐留していません！';
+
+      startStory(
+        [
+          {
+            chapter: `🚨 緊急防衛戦・${defPref.name}強襲${isLastLand ? '（ラスト拠点！）' : ''}`,
+            speaker: enemyLeader.name,
+            leftUnit: defenderLeader,
+            rightUnit: enemyLeader,
+            text: `「${atkPref.name}軍、進軍開始！${defPref.name}を我らの手に取り戻す！\n${isLastLand ? 'これが貴様らの最後の砦だ……容赦はせぬぞ！' : '覚悟するがいい、ランス軍の守備隊よ！」'}`
+          },
+          {
+            chapter: `🚨 ${defPref.name} 防衛判断`,
+            speaker: defenderLeader.name,
+            leftUnit: defenderLeader,
+            rightUnit: enemyLeader,
+            text: `${stationedSummary}\n防衛戦に挑むか、それとも領地を放棄して明け渡すか決断してください！`,
+            choices: [
+              {
+                label: '⚔️ 防衛戦に挑む！',
+                style: 'vip-btn-crimson',
+                onSelect: () => {
+                  startBattle({
+                    mode: 'defense',
+                    prefId: defendPrefId,
+                    attackerPrefId
+                  });
+                }
+              },
+              {
+                label: isLastLand ? '🏳️ 放棄する（領土0でBAD END）' : '🏳️ 防衛せず放棄する（領地明け渡し）',
+                style: 'vip-btn',
+                onSelect: () => {
+                  handleTerritoryLost(defendPrefId, attackerPrefId);
+                }
+              }
+            ]
+          }
+        ],
+        null
+      );
+    }
+
+    // =========================================================================
+    // 7. DEEP SPECIALIZED BATTLE ENGINE (BARRIER / COVER / HEAL / AOE / RETREAT)
+    // =========================================================================
+    function startInvasionWithAdv() {
+      const pref = PREFECTURES[Game.selectedPrefId];
+      const st = Game.prefStates[pref.id];
+      if (!st || st.owner !== 'enemy' || !isAdjacentToPlayer(pref.id)) {
+        showMapToast('隣接する敵領土を選択してください！');
+        return;
+      }
+      if (Game.ap <= 0) {
+        showMapToast('行動力が足りません！');
+        return;
+      }
+
+      Game.ap -= 1;
+      const enemyLeader = st.defenders[0] || CHARACTERS.kenshin;
+      const vanguardLeader = Game.roster.filter((u) => u.hp > 0)[0] || CHARACTERS.rance;
+
+      VipAudio.playTrack(2);
+      startStory(
+        [
+          {
+            chapter: `⚔️ ${pref.name}侵攻・開戦前夜`,
+            speaker: vanguardLeader.name,
+            leftUnit: vanguardLeader,
+            rightUnit: enemyLeader,
+            text: `「ガハハハ！${pref.name}の美少女ヒロインども、俺様が迎えに来たぜ！\n大人しく降伏すれば可愛がってやるぞ！」`
+          },
+          {
+            chapter: `⚔️ ${pref.name}侵攻・迎撃宣言`,
+            speaker: enemyLeader.name,
+            leftUnit: vanguardLeader,
+            rightUnit: enemyLeader,
+            text: `${enemyLeader.quote}\n「${pref.name}の地は一歩も通さぬ！いざ、尋常に勝負！！」`
+          }
+        ],
+        () => {
+          startBattle({
+            mode: 'invasion',
+            prefId: pref.id,
+            attackerPrefId: null
+          });
+        }
+      );
+    }
+
+    function hydrateUnitSkillSet(u) {
+      const base = CHARACTERS[u.id] || buildSpecializedSkillsForRole(u.role, u.name);
+      return {
+        normalSkills: Array.isArray(u.normalSkills) && u.normalSkills.length > 0 ? u.normalSkills : base.normalSkills,
+        ultimate: u.ultimate || base.ultimate
+      };
+    }
+
+    function startBattle({ mode, prefId, attackerPrefId }) {
+      const pref = PREFECTURES[prefId];
+      const st = Game.prefStates[prefId];
+      VipAudio.playTrack(mode === 'defense' ? 5 : 2);
+
+      let rawPlayerUnits = [];
+      if (mode === 'defense') {
+        rawPlayerUnits = getStationedUnitsForPref(prefId).filter((u) => u.hp > 0);
+        if (rawPlayerUnits.length === 0) {
+          const sk = buildSpecializedSkillsForRole('足軽', `${pref.name}守備隊長`);
+          rawPlayerUnits = [
+            {
+              id: 'militia_' + prefId,
+              name: `${pref.name}守備隊長`,
+              title: '地元義勇軍',
+              role: '足軽',
+              hair: '#94a3b8',
+              hairStyle: 'short',
+              eye: '#38bdf8',
+              outfit: '#334155',
+              accent: '#facc15',
+              headgear: 'headband',
+              hp: 250,
+              maxHp: 250,
+              atk: 46,
+              def: 48,
+              ap: 1,
+              normalSkills: sk.normalSkills,
+              ultimate: sk.ultimate
+            }
+          ];
+        }
+      } else {
+        rawPlayerUnits = Game.roster.filter((u) => u.hp > 0).slice(0, 4);
+        if (rawPlayerUnits.length === 0) {
+          Game.roster[0].hp = Math.round(Game.roster[0].maxHp * 0.5);
+          rawPlayerUnits = [Game.roster[0]];
+        }
+      }
+
+      const playerSquad = rawPlayerUnits.map((u) => {
+        const sk = hydrateUnitSkillSet(u);
+        return {
+          ...u,
+          normalSkills: sk.normalSkills,
+          ultimate: sk.ultimate,
+          side: 'player',
+          remAp: u.ap,
+          ultChargesLeft: 1,
+          chargeStacks: 0,
+          barrier: 0,
+          guarding: false,
+          coveringAllies: false,
+          flashTimer: 0,
+          lunge: 0
+        };
+      });
+
+      const enemySource = mode === 'defense'
+        ? Game.prefStates[attackerPrefId].defenders
+        : st.defenders;
+
+      const enemySquad = enemySource
+        .filter((d) => d.hp > 0)
+        .slice(0, 4)
+        .map((d) => {
+          const sk = hydrateUnitSkillSet(d);
+          return {
+            ...d,
+            normalSkills: sk.normalSkills,
+            ultimate: sk.ultimate,
+            side: 'enemy',
+            remAp: d.ap,
+            ultChargesLeft: 1,
+            chargeStacks: 0,
+            barrier: 0,
+            guarding: false,
+            coveringAllies: false,
+            flashTimer: 0,
+            lunge: 0
+          };
+        });
+
+      const firstEnemyIdx = enemySquad.findIndex((e) => e.hp > 0);
+      const firstAllyIdx = playerSquad.findIndex((u) => u.hp > 0);
+
+      Game.battle = {
+        mode,
+        prefId,
+        attackerPrefId,
+        prefName: pref.name,
+        round: 1,
+        maxRounds: 8,
+        playerUnits: playerSquad,
+        enemyUnits: enemySquad,
+        activeIdx: firstAllyIdx >= 0 ? firstAllyIdx : 0,
+        selectedEnemyIdx: firstEnemyIdx >= 0 ? firstEnemyIdx : 0,
+        selectedAllyIdx: firstAllyIdx >= 0 ? firstAllyIdx : 0,
+        busy: false,
+        fxList: [],
+        popups: [],
+        narration: mode === 'defense'
+          ? `【防衛戦】${pref.name}駐留部隊が敵襲を迎え撃つ！`
+          : `【侵攻戦】${pref.name}の戦い開戦！キャラごとの技を使い分けよう！`
+      };
+
+      setScreen('battle');
+      syncBattleUi();
+    }
+
+    function syncBattleUi() {
+      const b = Game.battle;
+      if (!b) return;
+
+      if (!b.enemyUnits[b.selectedEnemyIdx] || b.enemyUnits[b.selectedEnemyIdx].hp <= 0) {
+        const idx = b.enemyUnits.findIndex((e) => e.hp > 0);
+        if (idx >= 0) b.selectedEnemyIdx = idx;
+      }
+      if (!b.playerUnits[b.selectedAllyIdx] || b.playerUnits[b.selectedAllyIdx].hp <= 0) {
+        const idx = b.playerUnits.findIndex((u) => u.hp > 0);
+        if (idx >= 0) b.selectedAllyIdx = idx;
+      }
+
+      const tEl = document.getElementById('battle-title');
+      const rEl = document.getElementById('battle-round');
+      const nEl = document.getElementById('battle-narration');
+      const uEl = document.getElementById('battle-active-unit');
+      const apEl = document.getElementById('battle-ap-badge');
+      const retBtn = document.getElementById('btl-retreat-btn');
+      const targetBar = document.getElementById('battle-target-bar');
+      const targetLabel = document.getElementById('battle-target-label');
+      const targetBtns = document.getElementById('battle-target-buttons');
+      const descEl = document.getElementById('battle-skill-desc');
+
+      if (tEl) tEl.textContent = `${b.mode === 'defense' ? '防衛戦' : '侵攻戦'}：${b.prefName}`;
+      if (rEl) rEl.textContent = `R${b.round}/${b.maxRounds}`;
+      if (nEl) nEl.textContent = b.narration;
+      if (retBtn) {
+        retBtn.disabled = b.busy;
+        retBtn.textContent = b.mode === 'defense' ? '🏳️ 領地放棄' : '🏳️ 撤退';
+      }
+
+      const cur = b.playerUnits[b.activeIdx];
+      if (uEl) {
+        uEl.textContent = cur
+          ? `${cur.name}（溜め:${cur.chargeStacks} / 必殺:${cur.ultChargesLeft}）`
+          : '敵軍行動フェイズ';
+      }
+      if (apEl) {
+        apEl.textContent = cur ? `残行動 ${cur.remAp}/${cur.ap}` : '敵ターン';
+      }
+
+      const slots = [
+        { btn: document.getElementById('btl-slot-0'), skill: cur && cur.normalSkills ? cur.normalSkills[0] : null, isUlt: false },
+        { btn: document.getElementById('btl-slot-1'), skill: cur && cur.normalSkills ? cur.normalSkills[1] : null, isUlt: false },
+        { btn: document.getElementById('btl-slot-2'), skill: cur ? cur.ultimate : null, isUlt: true }
+      ];
+
+      slots.forEach(({ btn, skill, isUlt }) => {
+        if (!btn) return;
+        if (!cur || !skill) {
+          btn.textContent = '—';
+          btn.disabled = true;
+          return;
+        }
+        if (isUlt) {
+          btn.textContent = cur.ultChargesLeft > 0 ? `🔥${skill.name}` : `🔥済(${skill.name})`;
+          btn.disabled = b.busy || cur.ultChargesLeft <= 0;
+        } else {
+          btn.textContent = skill.name;
+          btn.disabled = b.busy;
+        }
+      });
+
+      if (descEl) {
+        if (!cur) {
+          descEl.textContent = '敵軍の行動中…';
+        } else {
+          const s0 = cur.normalSkills && cur.normalSkills[0] ? `[1]${cur.normalSkills[0].name}: ${cur.normalSkills[0].desc}` : '';
+          const s1 = cur.normalSkills && cur.normalSkills[1] ? ` / [2]${cur.normalSkills[1].name}: ${cur.normalSkills[1].desc}` : '';
+          const s2 = cur.ultimate ? ` / [3]必殺: ${cur.ultimate.desc}` : '';
+          descEl.textContent = `${s0}${s1}${s2}`;
+        }
+      }
+
+      if (targetBar && targetLabel && targetBtns) {
+        targetBar.classList.toggle('hidden', b.busy || !cur);
+        targetBtns.innerHTML = '';
+        const needsAlly = cur && cur.normalSkills && cur.normalSkills.some((sk) => sk.kind === 'heal_single' || sk.kind === 'barrier_single');
+        if (needsAlly) {
+          targetLabel.textContent = '味方対象:';
+          b.playerUnits.forEach((u, idx) => {
+            if (u.hp <= 0) return;
+            const btn = document.createElement('button');
+            const active = idx === b.selectedAllyIdx;
+            btn.className = `px-2 py-0.5 rounded font-bold shrink-0 border ${active ? 'bg-emerald-400 text-stone-950 border-white' : 'bg-stone-900 text-emerald-200 border-emerald-500/40'}`;
+            btn.textContent = u.name;
+            btn.addEventListener('click', () => {
+              b.selectedAllyIdx = idx;
+              VipAudio.sfx.ui();
+              syncBattleUi();
+            });
+            targetBtns.appendChild(btn);
+          });
+        } else {
+          targetLabel.textContent = '敵対象:';
+          b.enemyUnits.forEach((e, idx) => {
+            if (e.hp <= 0) return;
+            const btn = document.createElement('button');
+            const active = idx === b.selectedEnemyIdx;
+            btn.className = `px-2 py-0.5 rounded font-bold shrink-0 border ${active ? 'bg-rose-500 text-white border-amber-200' : 'bg-stone-900 text-rose-200 border-rose-500/40'}`;
+            btn.textContent = e.name;
+            btn.addEventListener('click', () => {
+              b.selectedEnemyIdx = idx;
+              VipAudio.sfx.ui();
+              syncBattleUi();
+            });
+            targetBtns.appendChild(btn);
+          });
+        }
+      }
+    }
+
+    function triggerSkillCutIn(unit, skillName, quote) {
+      const banner = document.getElementById('battle-cutin');
+      const spEl = document.getElementById('cutin-speaker');
+      const qtEl = document.getElementById('cutin-quote');
+      const skEl = document.getElementById('cutin-skill-tag');
+      const rlEl = document.getElementById('cutin-role-tag');
+      if (!banner) return;
+
+      if (spEl) spEl.textContent = `${unit.name} — 『${skillName}』`;
+      if (qtEl) qtEl.textContent = quote || `「${skillName}、見切るがいい！！」`;
+      if (skEl) skEl.textContent = '★ 必殺技カットイン ★';
+      if (rlEl) rlEl.textContent = unit.role || '';
+
+      banner.classList.remove('hidden');
+      banner.classList.remove('cutin-banner');
+      void banner.offsetWidth;
+      banner.classList.add('cutin-banner');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 1150);
+    }
+
+    function spawnBattleFx(fxStyle, x, y, color, dmgText = null) {
+      const b = Game.battle;
+      if (!b) return;
+      b.fxList.push({
+        style: fxStyle || 'slash_arc',
+        x,
+        y,
+        color,
+        life: 0.56,
+        maxLife: 0.56,
+        sparks: Array.from({ length: 10 }, (_, k) => ({
+          ang: (k / 10) * Math.PI * 2 + Math.random() * 0.4,
+          spd: 45 + Math.random() * 75,
+          size: 2.5 + Math.random() * 2.5
+        }))
+      });
+      if (dmgText !== null) {
+        b.popups.push({ x, y: y - 22, text: dmgText, color, life: 0.92 });
+      }
+    }
+
+    function delayMs(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function getChargeMultiplier(unit) {
+      return 1 + (unit.chargeStacks || 0) * 0.6;
+    }
+
+    function playSkillSound(key) {
+      const fn = VipAudio.sfx[key] || VipAudio.sfx.slash;
+      fn();
+    }
+
+    async function executeUnitSkill(actor, actorIdx, skill, isUltimate) {
+      const b = Game.battle;
+      if (!b || !actor || !skill) return;
+
+      if (isUltimate) {
+        if (actor.ultChargesLeft <= 0) return;
+        actor.ultChargesLeft -= 1;
+        triggerSkillCutIn(actor, skill.name, skill.quote);
+      }
+
+      actor.remAp -= 1;
+      playSkillSound(skill.sfx);
+
+      const chMult = getChargeMultiplier(actor);
+      const kind = skill.kind;
+
+      if (kind === 'charge') {
+        actor.chargeStacks = Math.min(3, (actor.chargeStacks || 0) + (skill.stacks || 1));
+        b.narration = `⚡ ${actor.name}の『${skill.name}』！（溜め×${actor.chargeStacks}）`;
+        spawnBattleFx(skill.fx, 82, 66 + actorIdx * 62, '#c084fc', `溜め×${actor.chargeStacks}`);
+        await delayMs(500);
+      } else if (kind === 'guard_charge') {
+        actor.guarding = true;
+        actor.chargeStacks = Math.min(3, (actor.chargeStacks || 0) + (skill.stacks || 1));
+        b.narration = `🛡️ ${actor.name}の『${skill.name}』！（防御＋溜め×${actor.chargeStacks}）`;
+        spawnBattleFx(skill.fx, 82, 66 + actorIdx * 62, '#38bdf8', 'GUARD+溜');
+        await delayMs(500);
+      } else if (kind === 'cover_ally') {
+        actor.coveringAllies = true;
+        actor.guarding = true;
+        b.narration = `🛡️ ${actor.name}が『${skill.name}』を展開！味方をかばう！`;
+        spawnBattleFx(skill.fx, 82, 66 + actorIdx * 62, '#38bdf8', 'かばう！');
+        await delayMs(500);
+      } else if (kind === 'guard_heal') {
+        actor.guarding = true;
+        const healAmt = Math.round(actor.maxHp * (skill.ratio || 0.15) + (skill.flat || 40));
+        actor.hp = Math.min(actor.maxHp, actor.hp + healAmt);
+        b.narration = `🛡️ ${actor.name}の『${skill.name}』！防御＆HP+${healAmt}`;
+        spawnBattleFx(skill.fx, 82, 66 + actorIdx * 62, '#34d399', `+${healAmt}`);
+        await delayMs(500);
+      } else if (kind === 'barrier_single') {
+        let tIdx = b.selectedAllyIdx;
+        if (!b.playerUnits[tIdx] || b.playerUnits[tIdx].hp <= 0) tIdx = actorIdx;
+        const target = b.playerUnits[tIdx];
+        const barAmt = Math.round((skill.amount || 100) * chMult);
+        actor.chargeStacks = 0;
+        target.barrier = (target.barrier || 0) + barAmt;
+        b.narration = `🔰 ${actor.name}が${target.name}に『${skill.name}』！(バリア+${barAmt})`;
+        spawnBattleFx(skill.fx, 82, 66 + tIdx * 62, '#38bdf8', `壁+${barAmt}`);
+        await delayMs(500);
+      } else if (kind === 'barrier_all_aoe') {
+        const barAmt = Math.round((skill.amount || 95) * chMult);
+        const dmgMult = (skill.power || 0.9) * chMult;
+        actor.chargeStacks = 0;
+        actor.lunge = 1;
+        b.narration = `✨ ${actor.name}の『${skill.name}』！味方全体バリア＆敵全体攻撃！`;
+        await delayMs(260);
+
+        b.playerUnits.forEach((u, idx) => {
+          if (u.hp > 0) {
+            u.barrier = (u.barrier || 0) + barAmt;
+            spawnBattleFx('hex_shield', 82, 66 + idx * 62, '#38bdf8', `壁+${barAmt}`);
+          }
+        });
+        b.enemyUnits.forEach((e, idx) => {
+          if (e.hp > 0) {
+            const dmg = Math.max(12, Math.round((actor.atk * dmgMult - e.def * 0.4) * (0.92 + Math.random() * 0.18)));
+            e.hp = Math.max(0, e.hp - dmg);
+            e.flashTimer = 0.25;
+            spawnBattleFx(skill.fx, 278, 66 + idx * 62, '#f472b6', `-${dmg}`);
+          }
+        });
+        Game.shakeTimer = 0.22;
+        Game.shakeMag = 6;
+        VipAudio.sfx.hit();
+        await delayMs(520);
+        actor.lunge = 0;
+      } else if (kind === 'heal_single') {
+        let tIdx = b.selectedAllyIdx;
+        if (!b.playerUnits[tIdx] || b.playerUnits[tIdx].hp <= 0) tIdx = actorIdx;
+        const target = b.playerUnits[tIdx];
+        const amt = Math.round((target.maxHp * (skill.ratio || 0.25) + (skill.flat || 90) + actor.atk * 0.5) * chMult);
+        actor.chargeStacks = 0;
+        target.hp = Math.min(target.maxHp, target.hp + amt);
+        b.narration = `💚 ${actor.name}の『${skill.name}』！${target.name}のHP+${amt}`;
+        spawnBattleFx(skill.fx, 82, 66 + tIdx * 62, '#34d399', `+${amt}`);
+        await delayMs(500);
+      } else if (kind === 'heal_all') {
+        const mult = chMult;
+        actor.chargeStacks = 0;
+        b.narration = `💚 ${actor.name}の『${skill.name}』！味方全体を癒やす！`;
+        await delayMs(240);
+        b.playerUnits.forEach((u, idx) => {
+          if (u.hp > 0) {
+            const amt = Math.round((u.maxHp * (skill.ratio || 0.2) + (skill.flat || 70) + actor.atk * 0.4) * mult);
+            u.hp = Math.min(u.maxHp, u.hp + amt);
+            spawnBattleFx(skill.fx, 82, 66 + idx * 62, '#34d399', `+${amt}`);
+          }
+        });
+        await delayMs(500);
+      } else if (kind === 'weak_aoe' || kind === 'strong_aoe') {
+        const mult = (skill.power || 0.65) * chMult;
+        actor.chargeStacks = 0;
+        actor.lunge = 1;
+        b.narration = `${kind === 'strong_aoe' ? '🔥' : '🌪️'} ${actor.name}の『${skill.name}』！`;
+        await delayMs(260);
+        b.enemyUnits.forEach((e, idx) => {
+          if (e.hp > 0) {
+            const gMult = e.guarding ? 0.5 : 1.0;
+            const dmg = Math.max(10, Math.round((actor.atk * mult - e.def * 0.42) * (0.9 + Math.random() * 0.2) * gMult));
+            e.hp = Math.max(0, e.hp - dmg);
+            e.flashTimer = 0.25;
+            spawnBattleFx(skill.fx, 278, 66 + idx * 62, '#fb923c', `-${dmg}`);
+          }
+        });
+        Game.shakeTimer = kind === 'strong_aoe' ? 0.25 : 0.14;
+        Game.shakeMag = kind === 'strong_aoe' ? 7 : 3.5;
+        VipAudio.sfx.hit();
+        await delayMs(520);
+        actor.lunge = 0;
+      } else {
+        // single_atk
+        let tIdx = b.selectedEnemyIdx;
+        if (!b.enemyUnits[tIdx] || b.enemyUnits[tIdx].hp <= 0) {
+          tIdx = b.enemyUnits.findIndex((e) => e.hp > 0);
+        }
+        if (tIdx >= 0) {
+          const target = b.enemyUnits[tIdx];
+          const mult = (skill.power || 1.0) * chMult;
+          actor.chargeStacks = 0;
+          actor.lunge = 1;
+          b.narration = `${isUltimate ? '🔥' : '⚔️'} ${actor.name}の『${skill.name}』！`;
+          await delayMs(isUltimate ? 400 : 240);
+
+          const gMult = target.guarding ? 0.5 : 1.0;
+          const dmg = Math.max(12, Math.round((actor.atk * mult - target.def * 0.45) * (0.92 + Math.random() * 0.2) * gMult));
+          target.hp = Math.max(0, target.hp - dmg);
+          target.flashTimer = 0.28;
+          Game.shakeTimer = isUltimate ? 0.25 : 0.16;
+          Game.shakeMag = isUltimate ? 8 : 4.5;
+          VipAudio.sfx.hit();
+          spawnBattleFx(skill.fx, 278, 66 + tIdx * 62, isUltimate ? '#facc15' : '#ef4444', `-${dmg}`);
+
+          b.narration = target.hp <= 0
+            ? `💥 ${target.name}を撃破した！`
+            : `${target.name}に ${dmg} のダメージ！（残HP:${target.hp}）`;
+          await delayMs(500);
+          actor.lunge = 0;
+        }
+      }
+    }
+
+    async function handlePlayerSlotPress(slotIdx) {
+      const b = Game.battle;
+      if (!b || b.busy) return;
+      const actor = b.playerUnits[b.activeIdx];
+      if (!actor || actor.hp <= 0) return;
+
+      const skill = slotIdx === 2
+        ? actor.ultimate
+        : (actor.normalSkills && actor.normalSkills[slotIdx]);
+
+      if (!skill) return;
+      if (slotIdx === 2 && actor.ultChargesLeft <= 0) {
+        showMapToast('この合戦での必殺技は使用済みです！');
+        return;
+      }
+
+      b.busy = true;
+      syncBattleUi();
+      await executeUnitSkill(actor, b.activeIdx, skill, slotIdx === 2);
+
+      if (b.enemyUnits.every((e) => e.hp <= 0)) {
+        await delayMs(380);
+        concludeBattle(true, false);
+        return;
+      }
+
+      const nextIdx = b.playerUnits.findIndex((u) => u.hp > 0 && u.remAp > 0);
+      if (nextIdx >= 0) {
+        b.activeIdx = nextIdx;
+        b.busy = false;
+        syncBattleUi();
+        return;
+      }
+
+      await runEnemyBattlePhase();
+    }
+
+    function applyDamageToPlayerUnit(target, targetIdx, rawDmg, fxStyle) {
+      const b = Game.battle;
+      // Check if an ally is covering this turn
+      const coverIdx = b.playerUnits.findIndex((u, i) => i !== targetIdx && u.hp > 0 && u.coveringAllies);
+      const actualIdx = coverIdx >= 0 ? coverIdx : targetIdx;
+      const actualTarget = b.playerUnits[actualIdx];
+      const isCovered = coverIdx >= 0;
+
+      let rem = Math.max(10, rawDmg * (actualTarget.guarding ? 0.5 : 1.0));
+      if ((actualTarget.barrier || 0) > 0) {
+        const absorbed = Math.min(actualTarget.barrier, rem);
+        actualTarget.barrier -= absorbed;
+        rem -= absorbed;
+      }
+      const finalDmg = Math.round(rem);
+      actualTarget.hp = Math.max(0, actualTarget.hp - finalDmg);
+      actualTarget.flashTimer = 0.26;
+      spawnBattleFx(fxStyle, 82, 66 + actualIdx * 62, '#c084fc', isCovered ? `🛡️-${finalDmg}` : `-${finalDmg}`);
+      return { actualTarget, finalDmg, isCovered };
+    }
+
+    async function runEnemyBattlePhase() {
+      const b = Game.battle;
+      if (!b) return;
+      b.narration = '⚠️ 敵軍の行動フェイズ！';
+      syncBattleUi();
+      await delayMs(380);
+
+      for (let ei = 0; ei < b.enemyUnits.length; ei++) {
+        const enemy = b.enemyUnits[ei];
+        if (enemy.hp <= 0) continue;
+
+        for (let act = 0; act < (enemy.ap || 1); act++) {
+          const livingPlayers = b.playerUnits
+            .map((u, idx) => ({ u, idx }))
+            .filter((item) => item.u.hp > 0);
+          if (livingPlayers.length === 0) break;
+
+          const useUlt = enemy.ultChargesLeft > 0 && act === 0 && Math.random() < 0.4;
+          const sk = useUlt
+            ? enemy.ultimate
+            : (enemy.normalSkills && enemy.normalSkills[act % enemy.normalSkills.length]) || enemy.ultimate;
+
+          if (useUlt) {
+            enemy.ultChargesLeft -= 1;
+            triggerSkillCutIn(enemy, sk.name, sk.quote);
+          }
+
+          playSkillSound(sk.sfx);
+
+          if (sk.kind === 'heal_single' || sk.kind === 'heal_all') {
+            const livingEnemies = b.enemyUnits.filter((e) => e.hp > 0);
+            livingEnemies.forEach((e, idx) => {
+              const amt = Math.round(e.maxHp * (sk.ratio || 0.2) + (sk.flat || 60));
+              e.hp = Math.min(e.maxHp, e.hp + amt);
+              spawnBattleFx('heal_ring', 278, 66 + idx * 62, '#34d399', `+${amt}`);
+            });
+            b.narration = `✨ 敵の『${sk.name}』で敵軍が回復！`;
+            syncBattleUi();
+            await delayMs(480);
+          } else if (sk.kind === 'weak_aoe' || sk.kind === 'strong_aoe' || sk.kind === 'barrier_all_aoe') {
+            enemy.lunge = 1;
+            b.narration = `${useUlt ? '🔥' : '⚠️'} 敵の『${sk.name}』！`;
+            syncBattleUi();
+            await delayMs(260);
+            const mult = sk.power || (useUlt ? 1.3 : 0.75);
+            livingPlayers.forEach(({ u, idx }) => {
+              const raw = (enemy.atk * mult - u.def * 0.4) * (0.9 + Math.random() * 0.2);
+              applyDamageToPlayerUnit(u, idx, raw, sk.fx || 'aoe_storm');
+            });
+            Game.shakeTimer = 0.22;
+            Game.shakeMag = 5.5;
+            VipAudio.sfx.hit();
+            syncBattleUi();
+            await delayMs(500);
+            enemy.lunge = 0;
+          } else {
+            const pick = livingPlayers[Math.floor(Math.random() * livingPlayers.length)];
+            enemy.lunge = 1;
+            b.narration = `${useUlt ? '🔥' : '⚔️'} ${enemy.name}の『${sk.name}』！`;
+            syncBattleUi();
+            await delayMs(240);
+
+            const mult = sk.power || (useUlt ? 1.55 : 1.0);
+            const raw = (enemy.atk * mult - pick.u.def * 0.42) * (0.9 + Math.random() * 0.22);
+            const res = applyDamageToPlayerUnit(pick.u, pick.idx, raw, sk.fx || 'slash_arc');
+            Game.shakeTimer = 0.18;
+            Game.shakeMag = 4.5;
+            VipAudio.sfx.hit();
+
+            b.narration = res.isCovered
+              ? `🛡️ ${res.actualTarget.name}が身代わりとなり ${res.finalDmg} ダメージを受けた！`
+              : `${res.actualTarget.name}に ${res.finalDmg} ダメージ！`;
+            syncBattleUi();
+            await delayMs(480);
+            enemy.lunge = 0;
+          }
+
+          if (b.playerUnits.every((u) => u.hp <= 0)) {
+            await delayMs(400);
+            concludeBattle(false, false);
+            return;
+          }
+        }
+      }
+
+      b.round += 1;
+      if (b.round > b.maxRounds) {
+        b.narration = '規定ラウンド終了！両軍痛み分けで戦線を離脱した！';
+        syncBattleUi();
+        await delayMs(620);
+        concludeBattle(false, true);
+        return;
+      }
+
+      for (const u of b.playerUnits) {
+        if (u.hp > 0) {
+          u.remAp = u.ap;
+          u.guarding = false;
+          u.coveringAllies = false;
+        }
+      }
+      b.activeIdx = b.playerUnits.findIndex((u) => u.hp > 0);
+      b.busy = false;
+      b.narration = `ROUND ${b.round} 開始！コマンドを選択せよ！`;
+      syncBattleUi();
+    }
+
+    function handleSingleRetreatButton() {
+      const b = Game.battle;
+      if (!b || b.busy) return;
+      VipAudio.sfx.ui();
+      concludeBattle(false, true);
+    }
+
+    function concludeBattle(won, retreated) {
+      const b = Game.battle;
+      if (!b) return;
+      const st = Game.prefStates[b.prefId];
+
+      for (const pu of b.playerUnits) {
+        const orig = Game.roster.find((r) => r.id === pu.id);
+        if (orig) orig.hp = Math.max(1, pu.hp);
+      }
+      const enemySource = b.mode === 'defense'
+        ? Game.prefStates[b.attackerPrefId].defenders
+        : st.defenders;
+      for (const eu of b.enemyUnits) {
+        const orig = enemySource.find((d) => d.id === eu.id);
+        if (orig) orig.hp = Math.max(0, eu.hp);
+      }
+
+      const wasDefense = b.mode === 'defense';
+      const prefName = b.prefName;
+      const prefId = b.prefId;
+      const attackerPrefId = b.attackerPrefId;
+      const companion = b.playerUnits.find((u) => u.id !== 'rance' && u.hp > 0) || CHARACTERS.sill;
+
+      Game.battle = null;
+
+      if (wasDefense) {
+        if (won) {
+          VipAudio.playTrack(1);
+          VipAudio.sfx.victory();
+          Game.gold += 350;
+          Game.satisfaction += 4;
+          setScreen('map');
+          syncMapHud();
+          renderMap();
+          showMapToast(`🛡️ 防衛成功！${prefName}駐留部隊が敵襲を完全に退けた！（+350両）`);
+        } else {
+          VipAudio.sfx.defeat();
+          handleTerritoryLost(prefId, attackerPrefId);
+        }
+        return;
+      }
+
+      if (won) {
+        VipAudio.playTrack(1);
+        VipAudio.sfx.victory();
+        st.owner = 'player';
+        st.garrison = 260;
+        st.stationedIds = [];
+        Game.gold += 450;
+        Game.satisfaction += 5;
+
+        for (const d of st.defenders) {
+          d.hp = Math.round(d.maxHp * 0.7);
+          if (!Game.roster.some((r) => r.id === d.id) && !Game.prisoners.some((p) => p.id === d.id)) {
+            Game.prisoners.push(d);
+          }
+        }
+
+        if (Game.prefStates.every((s) => s.owner === 'player')) {
+          playEndingSequence();
+          return;
+        }
+
+        setScreen('map');
+        syncMapHud();
+        renderMap();
+        showMapToast(`🎉 ${prefName}を制圧！捕虜を獲得（[3]編成/配置で登用ADV＆駐留配置可能！）`);
+      } else {
+        const remEnemyHp = st.defenders.reduce((acc, d) => acc + d.hp, 0);
+        st.garrison = Math.max(90, Math.round(remEnemyHp * 0.45));
+        if (retreated) {
+          playRetreatSequence(prefName, companion);
+        } else {
+          VipAudio.playTrack(1);
+          VipAudio.sfx.defeat();
+          Game.gold += 220;
+          setScreen('map');
+          syncMapHud();
+          renderMap();
+          showMapToast(`💥 敗北撤退……だが敵も消耗している！兵補充して再戦だ！`);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 8. RECRUITMENT ADV, GARRISON STATIONING & SAVE/DELETE MODALS
+    // =========================================================================
+    function recruitPrisonerWithAdv(prisonerIdx) {
+      const [heroine] = Game.prisoners.splice(prisonerIdx, 1);
+      if (!heroine) return;
+
+      closeModal();
+      VipAudio.playTrack(3);
+      startStory(
+        [
+          {
+            chapter: `✨ 武将登用イベント・${heroine.name}`,
+            speaker: 'ランス',
+            leftUnit: CHARACTERS.rance,
+            rightUnit: heroine,
+            text: `「おい${heroine.name}！お前の戦いっぷり、なかなか気に入ったぜ。\n今日から俺様の軍勢に入って、一緒にJAPANの天下を獲るぞ！」`
+          },
+          {
+            chapter: `✨ 仲間加入！・${heroine.name}`,
+            speaker: heroine.name,
+            leftUnit: CHARACTERS.rance,
+            rightUnit: heroine,
+            text: `${heroine.recruitQuote || heroine.quote}\n「（${heroine.name}【${heroine.role}】がランス軍に加わった！各国へ駐留配置も可能です）」`
+          }
+        ],
+        () => {
+          heroine.stationedPrefId = null;
+          Game.roster.push(heroine);
+          Game.satisfaction += 4;
+          VipAudio.playTrack(1);
+          setScreen('map');
+          syncMapHud();
+          renderMap();
+          showMapToast(`🎊 ${heroine.name}が正式に仲間になった！[3]編成/配置で好きな国へ配置しよう`);
+        }
+      );
+    }
+
+    function openRosterModal() {
+      VipAudio.sfx.ui();
+      const titleEl = document.getElementById('modal-title');
+      const bodyEl = document.getElementById('modal-body');
+      const delBar = document.getElementById('modal-delete-bar');
+      if (delBar) delBar.classList.add('hidden');
+
+      const selPref = PREFECTURES[Game.selectedPrefId] || PREFECTURES[22];
+      const selSt = Game.prefStates[selPref.id];
+      const canStationHere = selSt && selSt.owner === 'player';
+
+      if (titleEl) {
+        titleEl.textContent = `📜 武将編成・駐留配置 (${selPref.name}選択中)`;
+      }
+      if (!bodyEl) return;
+
+      let html = `
+        <div class="p-2 rounded-xl bg-amber-950/50 border border-amber-400/40 text-[10px] text-amber-100">
+          ${canStationHere
+            ? `現在選択中の自領 <strong>【${selPref.name}】</strong> へ最大4名まで防衛駐留させられます（敵襲時にその部隊が防衛戦を行います）。`
+            : `※マップで自領（黄色）をタップしてから開くと、その国へ駐留配置できます。`}
+        </div>
+        <div class="font-black text-amber-300 text-[11px] pt-1">【ランス軍武将一覧（先頭4名が侵攻戦に参加）】</div>
+      `;
+
+      Game.roster.forEach((u, idx) => {
+        const stName = u.stationedPrefId !== null && u.stationedPrefId !== undefined && PREFECTURES[u.stationedPrefId]
+          ? PREFECTURES[u.stationedPrefId].name
+          : '未配置';
+        const isHere = u.stationedPrefId === selPref.id;
+        const sk = hydrateUnitSkillSet(u);
+        const skillSummary = `${sk.normalSkills.map((s) => s.name).join('・')} / 必:${sk.ultimate.name}`;
+
+        html += `
+          <div class="p-2 rounded-xl bg-stone-950/90 border border-amber-400/30 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-black text-white truncate">
+                ${idx < 4 ? '⚔️侵攻' : '待機'} ${u.name}
+                <span class="text-[10px] text-amber-300">[${u.role}/行動${u.ap}]</span>
+              </div>
+              <div class="text-[10px] text-slate-300 truncate">
+                HP ${u.hp}/${u.maxHp} | 駐留: <strong class="text-cyan-300">${stName}</strong> | ${skillSummary}
+              </div>
+            </div>
+            <div class="flex gap-1 shrink-0">
+              ${canStationHere && !isHere ? `<button data-station="${u.id}" class="btn-station vip-btn vip-btn-emerald px-2 py-1 rounded-lg text-[10px] font-black">${selPref.name.replace(/[県府]$/, '')}へ配置</button>` : ''}
+              ${idx > 0 ? `<button data-promote="${idx}" class="btn-promote vip-btn px-2 py-1 rounded-lg text-[10px] font-bold">侵攻枠へ</button>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `<div class="font-black text-rose-300 text-[11px] pt-2">【捕虜ヒロイン（登用ADV付きで仲間に！）】</div>`;
+      if (Game.prisoners.length === 0) {
+        html += `<div class="text-[11px] text-slate-400">現在捕虜はいません。敵領土を制圧すると捕虜を獲得できます。</div>`;
+      } else {
+        Game.prisoners.forEach((p, idx) => {
+          html += `
+            <div class="p-2 rounded-xl bg-rose-950/40 border border-rose-400/40 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="font-black text-rose-200 truncate">${p.name} <span class="text-[10px] text-slate-300">(${p.title})</span></div>
+                <div class="text-[10px] text-slate-300 italic truncate">${p.quote}</div>
+              </div>
+              <button data-recruit="${idx}" class="btn-recruit vip-btn vip-btn-gold px-2.5 py-1 rounded-lg text-[10px] font-black shrink-0">登用ADV</button>
+            </div>
+          `;
+        });
+      }
+
+      bodyEl.innerHTML = html;
+
+      bodyEl.querySelectorAll('.btn-station').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const uid = btn.dataset.station;
+          if (assignUnitToPref(uid, selPref.id)) {
+            VipAudio.sfx.ui();
+            syncMapHud();
+            openRosterModal();
+            showMapToast(`🛡️ ${selPref.name}の防衛部隊に配置しました！`);
+          }
+        });
+      });
+
+      bodyEl.querySelectorAll('.btn-promote').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.promote);
+          if (i > 0 && i < Game.roster.length) {
+            const [picked] = Game.roster.splice(i, 1);
+            Game.roster.splice(1, 0, picked);
+            VipAudio.sfx.ui();
+            openRosterModal();
+          }
+        });
+      });
+
+      bodyEl.querySelectorAll('.btn-recruit').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.recruit);
+          recruitPrisonerWithAdv(i);
+        });
+      });
+
+      const modal = document.getElementById('screen-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function openPrefInspectModal() {
+      VipAudio.sfx.ui();
+      const pref = PREFECTURES[Game.selectedPrefId];
+      const st = Game.prefStates[pref.id];
+      const titleEl = document.getElementById('modal-title');
+      const bodyEl = document.getElementById('modal-body');
+      const delBar = document.getElementById('modal-delete-bar');
+      if (delBar) delBar.classList.add('hidden');
+      if (titleEl) titleEl.textContent = `🗾 ${pref.name}（${pref.region}）武将・駐留情報`;
+      if (!bodyEl) return;
+
+      const unitsToShow = st.owner === 'player' ? getStationedUnitsForPref(pref.id) : st.defenders;
+      if (unitsToShow.length === 0) {
+        bodyEl.innerHTML = `<div class="p-3 text-slate-300">現在この国には駐留武将がいません。[3]編成/配置から防衛部隊を配置できます。</div>`;
+      } else {
+        bodyEl.innerHTML = unitsToShow
+          .map(
+            (d) => {
+              const sk = hydrateUnitSkillSet(d);
+              return `
+                <div class="p-2.5 rounded-xl bg-stone-950/90 border border-amber-400/35 space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="font-vip font-black text-sm text-amber-300">${d.name}</span>
+                    <span class="px-2 py-0.5 rounded bg-purple-900/80 text-[10px] font-bold text-purple-200">${d.role} / 行動${d.ap} / HP ${d.hp}</span>
+                  </div>
+                  <div class="text-[10px] text-cyan-300">通常：${sk.normalSkills.map((s) => s.name).join('・')} / 必殺：${sk.ultimate.name}</div>
+                  <p class="text-[11px] text-rose-100 leading-snug">${d.quote}</p>
+                </div>
+              `;
+            }
+          )
+          .join('');
+      }
+
+      const modal = document.getElementById('screen-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function openSaveManagerModal() {
+      VipAudio.sfx.ui();
+      Game.pendingDeleteSlot = null;
+      const titleEl = document.getElementById('modal-title');
+      const bodyEl = document.getElementById('modal-body');
+      const delBar = document.getElementById('modal-delete-bar');
+      if (delBar) delBar.classList.add('hidden');
+      if (titleEl) titleEl.textContent = '💾 セーブ / ロード / セーブデータ削除';
+      if (!bodyEl) return;
+
+      bodyEl.innerHTML = '';
+      [0, 1, 2, 3].forEach((slot) => {
+        const data = readSaveSlot(slot);
+        const label = slot === 0 ? 'スロット0（オートセーブ）' : `セーブスロット ${slot}`;
+        const owned = data && Array.isArray(data.prefStates)
+          ? data.prefStates.filter((s) => s.owner === 'player').length
+          : 0;
+
+        const card = document.createElement('div');
+        card.className = 'p-2.5 rounded-xl bg-stone-950/90 border border-amber-400/35 space-y-1.5';
+        card.innerHTML = data
+          ? `
+            <div class="flex justify-between items-center">
+              <span class="font-black text-amber-300">${label}</span>
+              <span class="text-[10px] text-slate-400">${data.savedAt || ''}</span>
+            </div>
+            <div class="text-[11px] text-slate-200">
+              第${data.turn}ターン / 領土 <strong>${owned}/47</strong> / 資金 ${data.gold}両 / 満足度 ${data.satisfaction}
+            </div>
+          `
+          : `<div class="font-bold text-slate-400">${label} — 空きデータ</div>`;
+
+        const row = document.createElement('div');
+        row.className = 'flex gap-1.5 pt-1';
+
+        if (slot > 0 && Game.prefStates.length > 0) {
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'vip-btn vip-btn-gold px-2.5 py-1 rounded-lg text-[10px] font-black';
+          saveBtn.textContent = '💾 セーブ';
+          saveBtn.addEventListener('click', () => {
+            VipAudio.sfx.ui();
+            writeSaveSlot(slot, buildSaveData(`手動セーブ${slot}`));
+            openSaveManagerModal();
+            showMapToast(`${label}に保存しました！`);
+          });
+          row.appendChild(saveBtn);
+        }
+
+        if (data) {
+          const loadBtn = document.createElement('button');
+          loadBtn.className = 'vip-btn px-2.5 py-1 rounded-lg text-[10px] font-bold';
+          loadBtn.textContent = '▶ ロード';
+          loadBtn.addEventListener('click', () => {
+            if (loadSaveData(data)) {
+              VipAudio.sfx.victory();
+              closeModal();
+              setScreen('map');
+              syncMapHud();
+              renderMap();
+              showMapToast(`${label}から再開しました！`);
+            }
+          });
+          row.appendChild(loadBtn);
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'vip-btn vip-btn-crimson px-2.5 py-1 rounded-lg text-[10px] font-bold';
+          delBtn.textContent = '🗑 削除';
+          delBtn.addEventListener('click', () => {
+            VipAudio.sfx.ui();
+            Game.pendingDeleteSlot = slot;
+            const msgEl = document.getElementById('modal-delete-msg');
+            if (msgEl) msgEl.textContent = `「${label}」のセーブデータを完全に削除しますか？`;
+            if (delBar) delBar.classList.remove('hidden');
+          });
+          row.appendChild(delBtn);
+        }
+
+        card.appendChild(row);
+        bodyEl.appendChild(card);
+      });
+
+      const modal = document.getElementById('screen-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('screen-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // =========================================================================
+    // 9. CRISP HIGH-DPI ANIME PORTRAITS (INCLUDING KOUHIME BLACK & SILL FLUFFY)
+    // =========================================================================
+    function drawAnimeHeroinePortrait(ctx, unit, cx, cy, scale = 1, flash = false) {
+      if (!unit) return;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+
+      const hairCol = flash ? '#ffffff' : (unit.hair || '#facc15');
+      const outfitCol = flash ? '#ffffff' : (unit.outfit || '#1e3a8a');
+      const accentCol = flash ? '#ffffff' : (unit.accent || '#fde047');
+
+      // Back hair / fluffy silhouette
+      ctx.fillStyle = hairCol;
+      if (unit.hairStyle === 'fluffy') {
+        // Fluffy puffs around head & shoulders (e.g. Sill's fluffy pink hair)
+        [
+          [-22, -14, 11], [22, -14, 11],
+          [-25, 2, 12], [25, 2, 12],
+          [-20, 18, 11], [20, 18, 11],
+          [0, -24, 13]
+        ].forEach(([px, py, pr]) => {
+          ctx.beginPath();
+          ctx.arc(px, py, pr, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      } else if (unit.hairStyle === 'long' || unit.hairStyle === 'hime') {
+        ctx.beginPath();
+        ctx.roundRect(-24, -22, 48, 68, 16);
+        ctx.fill();
+        if (unit.hairStyle === 'hime') {
+          // Side hime sidelocks
+          ctx.fillRect(-23, -10, 7, 36);
+          ctx.fillRect(16, -10, 7, 36);
+        }
+      } else if (unit.hairStyle === 'twintail') {
+        ctx.beginPath();
+        ctx.ellipse(-26, 6, 8, 28, 0.22, 0, Math.PI * 2);
+        ctx.ellipse(26, 6, 8, 28, -0.22, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (unit.hairStyle === 'ponytail' || unit.hairStyle === 'sidetail') {
+        ctx.beginPath();
+        ctx.ellipse(22, -4, 9, 26, -0.35, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Outfit torso
+      ctx.fillStyle = outfitCol;
+      ctx.strokeStyle = '#09090b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-22, 44);
+      ctx.lineTo(-16, 12);
+      ctx.lineTo(16, 12);
+      ctx.lineTo(22, 44);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = accentCol;
+      ctx.beginPath();
+      ctx.moveTo(-9, 13);
+      ctx.lineTo(0, 26);
+      ctx.lineTo(9, 13);
+      ctx.closePath();
+      ctx.fill();
+
+      // Face
+      ctx.fillStyle = flash ? '#ffffff' : '#fde2cc';
+      ctx.beginPath();
+      ctx.arc(0, -6, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Eyes
+      ctx.fillStyle = flash ? '#ffffff' : (unit.eye || '#2563eb');
+      ctx.beginPath();
+      ctx.ellipse(-6.5, -5, 3.2, 4.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(6.5, -5, 3.2, 4.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-7.5, -6.5, 1.3, 0, Math.PI * 2);
+      ctx.arc(5.5, -6.5, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#991b1b';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(0, 2, 3.5, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx.stroke();
+
+      // Front bangs / hair
+      ctx.fillStyle = hairCol;
+      if (unit.hairStyle === 'spiky') {
+        ctx.beginPath();
+        ctx.moveTo(-20, -10);
+        ctx.lineTo(-12, -32);
+        ctx.lineTo(-4, -20);
+        ctx.lineTo(0, -35);
+        ctx.lineTo(5, -20);
+        ctx.lineTo(14, -31);
+        ctx.lineTo(20, -10);
+        ctx.closePath();
+        ctx.fill();
+      } else if (unit.hairStyle === 'fluffy') {
+        [-14, -6, 2, 10, 16].forEach((bx, bi) => {
+          ctx.beginPath();
+          ctx.arc(bx, -16 + (bi % 2) * 3, 8, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, -11, 18.5, Math.PI, Math.PI * 2);
+        ctx.lineTo(16, -4);
+        ctx.lineTo(5, -11);
+        ctx.lineTo(0, -3);
+        ctx.lineTo(-5, -11);
+        ctx.lineTo(-16, -4);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      if (!flash) {
+        if (unit.headgear === 'tiara' || unit.headgear === 'crest') {
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath();
+          ctx.moveTo(-8, -24);
+          ctx.lineTo(0, -33);
+          ctx.lineTo(8, -24);
+          ctx.closePath();
+          ctx.fill();
+        } else if (unit.headgear === 'ribbon') {
+          ctx.fillStyle = accentCol;
+          ctx.beginPath();
+          ctx.moveTo(-14, -22);
+          ctx.lineTo(-22, -28);
+          ctx.lineTo(-20, -17);
+          ctx.closePath();
+          ctx.moveTo(14, -22);
+          ctx.lineTo(22, -28);
+          ctx.lineTo(20, -17);
+          ctx.closePath();
+          ctx.fill();
+        } else if (unit.headgear === 'ears') {
+          ctx.fillStyle = '#f8fafc';
+          ctx.beginPath();
+          ctx.ellipse(-9, -31, 3.5, 11, -0.15, 0, Math.PI * 2);
+          ctx.ellipse(9, -31, 3.5, 11, 0.15, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (unit.headgear === 'hat') {
+          ctx.fillStyle = outfitCol;
+          ctx.beginPath();
+          ctx.ellipse(0, -23, 21, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function renderTitleShowcase(t) {
+      const c = document.getElementById('title-showcase-canvas');
+      const ctx = prepareCrispCanvas(c, 340, 215);
+      if (!ctx) return;
+
+      const g = ctx.createLinearGradient(0, 0, 340, 215);
+      g.addColorStop(0, '#2a0d22');
+      g.addColorStop(0.5, '#170c26');
+      g.addColorStop(1, '#291509');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 340, 215);
+
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.25)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(170, 108, 86 + Math.sin(t * 2) * 3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const cast = [CHARACTERS.kouhime, CHARACTERS.nobunaga, CHARACTERS.rance, CHARACTERS.kenshin, CHARACTERS.sill];
+      cast.forEach((u, idx) => {
+        const x = 46 + idx * 62;
+        const y = idx === 2 ? 105 : 116 + Math.sin(t * 2.5 + idx) * 3;
+        const sc = idx === 2 ? 1.25 : 0.95;
+        drawAnimeHeroinePortrait(ctx, u, x, y, sc, false);
+      });
+    }
+
+    function renderStoryPortrait(t) {
+      const c = document.getElementById('story-portrait-canvas');
+      const ctx = prepareCrispCanvas(c, 340, 225);
+      if (!ctx) return;
+
+      const g = ctx.createRadialGradient(170, 110, 15, 170, 112, 175);
+      g.addColorStop(0, '#3b1533');
+      g.addColorStop(1, '#0d0614');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 340, 225);
+
+      if (Game.storyLeftUnit && Game.storyRightUnit) {
+        drawAnimeHeroinePortrait(ctx, Game.storyLeftUnit, 105, 114 + Math.sin(t * 3) * 2, 1.48, false);
+        drawAnimeHeroinePortrait(ctx, Game.storyRightUnit, 235, 114 + Math.cos(t * 3) * 2, 1.48, false);
+      } else if (Game.storyLeftUnit) {
+        drawAnimeHeroinePortrait(ctx, Game.storyLeftUnit, 170, 114 + Math.sin(t * 3) * 2.5, 1.72, false);
+      }
+    }
+
+    function renderMap() {
+      const canvas = document.getElementById('japan-map-canvas');
+      const ctx = prepareCrispCanvas(canvas, 345, 545);
+      if (!ctx) return;
+
+      ctx.fillStyle = '#0c162b';
+      ctx.fillRect(0, 0, 345, 545);
+
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < 345; gx += 34) {
+        ctx.beginPath();
+        ctx.moveTo(gx, 0);
+        ctx.lineTo(gx, 545);
+        ctx.stroke();
+      }
+      for (let gy = 0; gy < 545; gy += 34) {
+        ctx.beginPath();
+        ctx.moveTo(0, gy);
+        ctx.lineTo(345, gy);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.26)';
+      ctx.lineWidth = 1.6;
+      for (const p of PREFECTURES) {
+        for (const nid of ADJACENCY[p.id] || []) {
+          if (nid > p.id) {
+            const q = PREFECTURES[nid];
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const p of PREFECTURES) {
+        const st = Game.prefStates[p.id];
+        const isSel = p.id === Game.selectedPrefId;
+        const adj = isAdjacentToPlayer(p.id);
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+
+        if (isSel) {
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, 12.5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = st.owner === 'player' ? '#facc15' : adj ? '#e11d48' : '#4f46e5';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, isSel ? 8.5 : 6.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        if (st.owner === 'player' && st.stationedIds && st.stationedIds.length > 0) {
+          ctx.fillStyle = '#10b981';
+          ctx.beginPath();
+          ctx.arc(7, -6, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = isSel ? '#fef08a' : '#e2e8f0';
+        ctx.font = isSel ? '900 9px "Noto Sans JP", sans-serif' : '700 7.5px "Noto Sans JP", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.name.replace(/[県府]$/, ''), 0, -10);
+        ctx.restore();
+      }
+    }
+
+    function drawDistinctSkillEffect(ctx, fx) {
+      const progress = 1 - fx.life / fx.maxLife;
+      const alpha = Math.max(0, 1 - progress * 0.9);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      if (fx.style === 'charge_aura') {
+        ctx.translate(fx.x, fx.y);
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 32 - progress * 14, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(0, 0, 16 + progress * 10, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (fx.style === 'heal_ring') {
+        ctx.translate(fx.x, fx.y);
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, 10 + progress * 26, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#a7f3d0';
+        ctx.beginPath();
+        ctx.arc(0, -14 - progress * 16, 4, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (fx.style === 'aoe_storm') {
+        ctx.translate(fx.x, fx.y);
+        ctx.strokeStyle = '#fb923c';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 18 + progress * 36, 10 + progress * 16, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (fx.style === 'rance_cross' || fx.style === 'dragon_slash') {
+        ctx.translate(fx.x, fx.y);
+        for (let layer = 0; layer < 2; layer++) {
+          ctx.save();
+          ctx.rotate(layer === 0 ? -0.55 + progress * 0.4 : 0.55 - progress * 0.4);
+          const grad = ctx.createLinearGradient(-46, 0, 46, 0);
+          grad.addColorStop(0, 'rgba(250,204,21,0)');
+          grad.addColorStop(0.5, layer === 0 ? '#facc15' : '#ef4444');
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 9 - progress * 4;
+          ctx.beginPath();
+          ctx.arc(0, 0, 26 + progress * 22, -1.1, 1.1);
+          ctx.stroke();
+          ctx.restore();
+        }
+      } else if (fx.style === 'magic_pillar') {
+        const pillarW = (1 - progress) * 34 + 8;
+        const grad = ctx.createLinearGradient(fx.x, fx.y - 65, fx.x, fx.y + 30);
+        grad.addColorStop(0, 'rgba(56,189,248,0)');
+        grad.addColorStop(0.5, '#38bdf8');
+        grad.addColorStop(1, '#e879f9');
+        ctx.fillStyle = grad;
+        ctx.fillRect(fx.x - pillarW * 0.5, fx.y - 60, pillarW, 85);
+
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(fx.x, fx.y + 16, 28 + progress * 14, 9, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (fx.style === 'sniper_beam') {
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = (1 - progress) * 8 + 2;
+        ctx.beginPath();
+        ctx.moveTo(fx.x - 160, fx.y - 12);
+        ctx.lineTo(fx.x + 18, fx.y);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(fx.x, fx.y, 12 + progress * 34, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (fx.style === 'shuriken_storm') {
+        ctx.translate(fx.x, fx.y);
+        ctx.rotate(progress * 14);
+        ctx.fillStyle = '#c084fc';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        for (let b = 0; b < 4; b++) {
+          ctx.rotate(Math.PI * 0.5);
+          ctx.beginPath();
+          ctx.moveTo(0, -4);
+          ctx.lineTo(26 + progress * 12, 0);
+          ctx.lineTo(0, 4);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      } else if (fx.style === 'hex_shield') {
+        ctx.translate(fx.x, fx.y);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3.5;
+        const rad = 22 + progress * 16;
+        ctx.beginPath();
+        for (let s = 0; s < 6; s++) {
+          const a = (s / 6) * Math.PI * 2;
+          const px = Math.cos(a) * rad;
+          const py = Math.sin(a) * rad;
+          if (s === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else {
+        ctx.translate(fx.x, fx.y);
+        ctx.strokeStyle = fx.color;
+        ctx.lineWidth = 7 - progress * 4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(-8, 0, 26 + progress * 18, -0.95, 0.95);
+        ctx.stroke();
+      }
+
+      if (Array.isArray(fx.sparks)) {
+        ctx.fillStyle = '#fef08a';
+        for (const sp of fx.sparks) {
+          const dist = sp.spd * progress;
+          const sx = fx.x + Math.cos(sp.ang) * dist;
+          const sy = fx.y + Math.sin(sp.ang) * dist;
+          ctx.beginPath();
+          ctx.arc(sx, sy, sp.size * (1 - progress * 0.6), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function renderBattleCanvas(dt) {
+      const b = Game.battle;
+      const canvas = document.getElementById('battle-canvas');
+      const ctx = prepareCrispCanvas(canvas, 360, 340);
+      if (!b || !ctx) return;
+
+      ctx.save();
+      if (Game.shakeTimer > 0) {
+        Game.shakeTimer -= dt;
+        ctx.translate((Math.random() - 0.5) * Game.shakeMag * 2, (Math.random() - 0.5) * Game.shakeMag * 2);
+      }
+
+      const bg = ctx.createLinearGradient(0, 0, 0, 340);
+      bg.addColorStop(0, '#2a0f24');
+      bg.addColorStop(1, '#100717');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 360, 340);
+
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.08)';
+      ctx.lineWidth = 1;
+      for (let gy = 55; gy <= 285; gy += 58) {
+        ctx.beginPath();
+        ctx.moveTo(12, gy);
+        ctx.lineTo(348, gy);
+        ctx.stroke();
+      }
+
+      b.playerUnits.forEach((u, idx) => {
+        u.flashTimer = Math.max(0, (u.flashTimer || 0) - dt);
+        const x = 82 + (u.lunge || 0) * 34;
+        const y = 66 + idx * 62;
+        if (u.hp > 0 && idx === b.activeIdx) {
+          ctx.strokeStyle = '#facc15';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(x, y, 30, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        if (u.hp > 0) {
+          drawAnimeHeroinePortrait(ctx, u, x, y, 0.72, u.flashTimer > 0);
+          if ((u.barrier || 0) > 0) {
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+        ctx.fillStyle = u.hp > 0 ? '#fef08a' : '#64748b';
+        ctx.font = 'bold 10px "Noto Sans JP", sans-serif';
+        ctx.textAlign = 'left';
+        const tags = [
+          u.chargeStacks > 0 ? `⚡${u.chargeStacks}` : '',
+          (u.barrier || 0) > 0 ? `壁${u.barrier}` : '',
+          u.coveringAllies ? '盾' : ''
+        ].filter(Boolean).join(' ');
+        ctx.fillText(`${u.name} HP:${u.hp}/${u.maxHp} ${tags}`, 12, y + 32);
+      });
+
+      b.enemyUnits.forEach((e, idx) => {
+        e.flashTimer = Math.max(0, (e.flashTimer || 0) - dt);
+        const x = 278 - (e.lunge || 0) * 34;
+        const y = 66 + idx * 62;
+        if (e.hp > 0 && idx === b.selectedEnemyIdx) {
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.arc(x, y, 30, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        if (e.hp > 0) {
+          drawAnimeHeroinePortrait(ctx, e, x, y, 0.72, e.flashTimer > 0);
+        }
+        ctx.fillStyle = e.hp > 0 ? '#fda4af' : '#64748b';
+        ctx.font = 'bold 10px "Noto Sans JP", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${e.name} HP:${e.hp}/${e.maxHp}`, 348, y + 32);
+      });
+
+      for (let i = b.fxList.length - 1; i >= 0; i--) {
+        const fx = b.fxList[i];
+        fx.life -= dt;
+        if (fx.life <= 0) {
+          b.fxList.splice(i, 1);
+          continue;
+        }
+        drawDistinctSkillEffect(ctx, fx);
+      }
+
+      ctx.font = '900 17px "Cinzel", "Noto Sans JP", sans-serif';
+      ctx.textAlign = 'center';
+      for (let i = b.popups.length - 1; i >= 0; i--) {
+        const pop = b.popups[i];
+        pop.life -= dt;
+        pop.y -= 26 * dt;
+        if (pop.life <= 0) {
+          b.popups.splice(i, 1);
+          continue;
+        }
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 4;
+        ctx.strokeText(pop.text, pop.x, pop.y);
+        ctx.fillStyle = pop.color;
+        ctx.fillText(pop.text, pop.x, pop.y);
+      }
+
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 10. SCREEN ROUTING & SAFE EVENT BINDING
+    // =========================================================================
+    function setScreen(name) {
+      Game.screen = name;
+      const toggle = (id, show) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !show);
+      };
+      toggle('screen-title', name === 'title');
+      toggle('screen-story', name === 'story');
+      toggle('map-hud', name === 'map');
+      toggle('screen-map', name === 'map');
+      toggle('screen-battle', name === 'battle');
+    }
+
+    function bindEvents() {
+      onId('btn-title-bgm', 'click', () => {
+        const name = VipAudio.cycleTrack();
+        const el = document.getElementById('btn-title-bgm');
+        if (el) el.textContent = `🎵 BGM: ${name}`;
+      });
+
+      onId('btn-new-game', 'click', () => {
+        VipAudio.ensure();
+        VipAudio.playTrack(0);
+        VipAudio.sfx.victory();
+        initNewCampaign();
+        playOpeningSequence();
+      });
+
+      onId('btn-title-continue', 'click', () => {
+        VipAudio.ensure();
+        const saved = readSaveSlot(0) || readSaveSlot(1) || readSaveSlot(2) || readSaveSlot(3);
+        if (!saved) {
+          openSaveManagerModal();
+          return;
+        }
+        loadSaveData(saved);
+        VipAudio.playTrack(1);
+        setScreen('map');
+        syncMapHud();
+        renderMap();
+        showMapToast('セーブデータから再開しました！');
+      });
+
+      onId('btn-title-saves', 'click', () => {
+        VipAudio.ensure();
+        openSaveManagerModal();
+      });
+
+      onId('btn-story-next', 'click', advanceStory);
+      onId('btn-story-skip', 'click', () => {
+        const step = Game.storyQueue[Game.storyIdx];
+        if (step && step.choices) return;
+        VipAudio.sfx.ui();
+        if (Game.storyOnFinish) Game.storyOnFinish();
+      });
+
+      onId('btn-map-bgm', 'click', () => {
+        const name = VipAudio.cycleTrack();
+        showMapToast(`🎵 BGM変更：${name}`);
+      });
+      onId('btn-map-save', 'click', openSaveManagerModal);
+      onId('btn-inspect-pref', 'click', openPrefInspectModal);
+
+      onId('cmd-invade', 'click', startInvasionWithAdv);
+      onId('cmd-reinforce', 'click', executeReinforce);
+      onId('cmd-roster', 'click', openRosterModal);
+      onId('cmd-reward', 'click', executeHotSpringReward);
+      onId('cmd-bonus', 'click', executeSatisfactionBonus);
+      onId('cmd-endturn', 'click', endPlayerTurn);
+
+      // Single battle-wide Retreat button & character-specialized 3-slot skill deck
+      onId('btl-retreat-btn', 'click', handleSingleRetreatButton);
+      onId('btl-slot-0', 'click', () => handlePlayerSlotPress(0));
+      onId('btl-slot-1', 'click', () => handlePlayerSlotPress(1));
+      onId('btl-slot-2', 'click', () => handlePlayerSlotPress(2));
+
+      onId('btn-close-modal', 'click', () => {
+        VipAudio.sfx.ui();
+        closeModal();
+      });
+
+      onId('btn-modal-confirm-del', 'click', () => {
+        if (Game.pendingDeleteSlot !== null) {
+          deleteSaveSlot(Game.pendingDeleteSlot);
+          Game.pendingDeleteSlot = null;
+          openSaveManagerModal();
+          showMapToast('セーブデータを削除しました');
+        }
+      });
+
+      onId('btn-modal-cancel-del', 'click', () => {
+        Game.pendingDeleteSlot = null;
+        const delBar = document.getElementById('modal-delete-bar');
+        if (delBar) delBar.classList.add('hidden');
+      });
+
+      onId('japan-map-canvas', 'pointerdown', (e) => {
+        if (Game.screen !== 'map') return;
+        const canvas = e.currentTarget;
+        const rect = canvas.getBoundingClientRect();
+        const wx = ((e.clientX - rect.left) / rect.width) * 345;
+        const wy = ((e.clientY - rect.top) / rect.height) * 545;
+
+        let bestId = Game.selectedPrefId;
+        let bestDist = 26;
+        for (const p of PREFECTURES) {
+          const d = Math.hypot(p.x - wx, p.y - wy);
+          if (d < bestDist) {
+            bestDist = d;
+            bestId = p.id;
+          }
+        }
+        if (bestId !== Game.selectedPrefId) {
+          Game.selectedPrefId = bestId;
+          VipAudio.sfx.ui();
+          syncMapHud();
+          renderMap();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('screen-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          if (e.code === 'Escape') closeModal();
+          return;
+        }
+
+        if (Game.screen === 'title') {
+          if (e.code === 'Enter' || e.code === 'Space') {
+            e.preventDefault();
+            const btn = document.getElementById('btn-new-game');
+            if (btn) btn.click();
+          }
+        } else if (Game.screen === 'story') {
+          if (e.code === 'Enter' || e.code === 'Space') {
+            e.preventDefault();
+            advanceStory();
+          }
+        } else if (Game.screen === 'map') {
+          if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+            Game.selectedPrefId = (Game.selectedPrefId + 1) % PREFECTURES.length;
+            VipAudio.sfx.ui();
+            syncMapHud();
+            renderMap();
+          } else if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+            Game.selectedPrefId = (Game.selectedPrefId - 1 + PREFECTURES.length) % PREFECTURES.length;
+            VipAudio.sfx.ui();
+            syncMapHud();
+            renderMap();
+          } else if (e.code === 'Digit1') startInvasionWithAdv();
+          else if (e.code === 'Digit2') executeReinforce();
+          else if (e.code === 'Digit3') openRosterModal();
+          else if (e.code === 'Digit4') executeHotSpringReward();
+          else if (e.code === 'Digit5') executeSatisfactionBonus();
+          else if (e.code === 'Digit6') endPlayerTurn();
+        } else if (Game.screen === 'battle') {
+          if (e.code === 'Digit1') handlePlayerSlotPress(0);
+          else if (e.code === 'Digit2') handlePlayerSlotPress(1);
+          else if (e.code === 'Digit3') handlePlayerSlotPress(2);
+        }
+      });
+    }
+
+    let lastTs = performance.now();
+    function mainLoop(now) {
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) / 1000));
+      lastTs = now;
+      Game.animTime += dt;
+
+      if (Game.mapToastTimer > 0) {
+        Game.mapToastTimer -= dt;
+        if (Game.mapToastTimer <= 0) {
+          const el = document.getElementById('map-toast');
+          if (el) el.classList.add('hidden');
+        }
+      }
+
+      if (Game.screen === 'title') {
+        renderTitleShowcase(Game.animTime);
+      } else if (Game.screen === 'story') {
+        renderStoryPortrait(Game.animTime);
+      } else if (Game.screen === 'battle') {
+        renderBattleCanvas(dt);
+      }
+
+      requestAnimationFrame(mainLoop);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initNewCampaign();
+      bindEvents();
+      setScreen('title');
+      requestAnimationFrame(mainLoop);
+    });
+  </script>
+</body>
+</html>
